@@ -18,12 +18,12 @@ class Category < ApplicationRecord
 
   def all_products
     # Рекурсивно отримати всі продукти з підкатегорій
-    Product.where(category_id: descendant_ids + [id])
+    Product.where(category_id: descendant_ids + [ id ])
   end
 
   private
 
   def descendant_ids
-    children.flat_map { |child| [child.id] + child.descendant_ids }
+    children.flat_map { |child| [ child.id ] + child.descendant_ids }
   end
 end

@@ -6,7 +6,7 @@ module Api
         @orders = current_user.orders.includes(:order_items).recent
 
         render json: OrderSerializer.new(@orders, {
-          include: [:order_items]
+          include: [ :order_items ]
         }).serializable_hash
       end
 
@@ -15,7 +15,7 @@ module Api
         @order = current_user.orders.includes(order_items: :product).find(params[:id])
 
         render json: OrderSerializer.new(@order, {
-          include: [:order_items, "order_items.product"]
+          include: [ :order_items, "order_items.product" ]
         }).serializable_hash
       end
 

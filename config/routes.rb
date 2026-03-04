@@ -9,7 +9,7 @@ Rails.application.routes.draw do
 
         # Resources (RESTful routes)
         resources :products do
-          resources :reviews, only: [:index, :create]
+          resources :reviews, only: [ :index, :create ]
 
           collection do
             get :search
@@ -23,7 +23,7 @@ Rails.application.routes.draw do
           end
         end
 
-        resources :orders, only: [:index, :show, :create, :update] do
+        resources :orders, only: [ :index, :show, :create, :update ] do
           member do
             patch :cancel
           end
@@ -42,8 +42,8 @@ Rails.application.routes.draw do
         namespace :admin do
           resources :products
           resources :categories
-          resources :orders, only: [:index, :show, :update]
-          resources :users, only: [:index, :show]
+          resources :orders, only: [ :index, :show, :update ]
+          resources :users, only: [ :index, :show ]
         end
       end
     end

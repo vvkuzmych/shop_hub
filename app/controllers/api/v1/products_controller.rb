@@ -1,7 +1,7 @@
 module Api
   module V1
     class ProductsController < BaseController
-      skip_before_action :authenticate_user!, only: [:index, :show, :search]
+      skip_before_action :authenticate_user!, only: [ :index, :show, :search ]
 
       # GET /api/v1/products
       def index
@@ -11,7 +11,7 @@ module Api
                            .per(params[:per_page] || 20)
 
         render json: ProductSerializer.new(@products, {
-          include: [:category],
+          include: [ :category ],
           meta: pagination_meta(@products)
         }).serializable_hash
       end
@@ -21,7 +21,7 @@ module Api
         @product = Product.includes(:category, reviews: :user).find(params[:id])
 
         render json: ProductSerializer.new(@product, {
-          include: [:category, :reviews]
+          include: [ :category, :reviews ]
         }).serializable_hash
       end
 
