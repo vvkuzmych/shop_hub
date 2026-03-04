@@ -190,7 +190,23 @@ development:
 
 ## 🏃 Running the Application
 
-### Start the Rails Server
+### Quick Start (Both Backend + Frontend)
+
+```bash
+# One command to start everything
+./scripts/start.sh
+
+# To stop everything
+./scripts/stop.sh
+```
+
+This will start:
+- Rails API on `http://localhost:3000`
+- React Frontend on `http://localhost:5173`
+
+### Manual Start
+
+#### Start the Rails Backend (Terminal 1)
 
 ```bash
 # Development mode (default port 3000)
@@ -205,7 +221,16 @@ bundle exec puma -C config/puma.rb
 
 Server will be available at: `http://localhost:3000`
 
-### Start Background Jobs (Optional)
+#### Start the React Frontend (Terminal 2)
+
+```bash
+cd frontend
+npm run dev
+```
+
+Frontend will be available at: `http://localhost:5173`
+
+### Start Background Jobs (Optional - Terminal 3)
 
 ```bash
 # In a separate terminal
@@ -215,10 +240,11 @@ bundle exec sidekiq
 ### Verify Installation
 
 ```bash
-# Check server is running
+# Check backend is running
 curl http://localhost:3000/api/v1/products
 
-# Should return JSON list of products
+# Open frontend in browser
+open http://localhost:5173
 ```
 
 ---
@@ -344,7 +370,7 @@ Or view the static files:
 
 ```
 shop_hub/
-├── app/
+├── app/                      # Rails Backend
 │   ├── controllers/
 │   │   └── api/v1/           # API controllers
 │   │       ├── admin/        # Admin controllers
@@ -356,6 +382,9 @@ shop_hub/
 │   │   ├── user.rb
 │   │   ├── product.rb
 │   │   ├── order.rb
+│   │   ├── comment.rb        # Polymorphic
+│   │   ├── address.rb        # Polymorphic
+│   │   ├── attachment.rb     # Polymorphic
 │   │   └── ...
 │   ├── serializers/          # JSON:API serializers
 │   │   ├── product_serializer.rb
@@ -367,6 +396,17 @@ shop_hub/
 │   └── policies/             # Pundit authorization policies
 │       ├── product_policy.rb
 │       └── ...
+├── frontend/                 # React Frontend
+│   ├── src/
+│   │   ├── api/              # API client layer
+│   │   ├── components/       # React components
+│   │   ├── pages/            # Page components
+│   │   ├── store/            # Zustand state
+│   │   ├── types/            # TypeScript types
+│   │   └── App.tsx           # Main app
+│   ├── public/               # Static assets
+│   ├── package.json          # Node dependencies
+│   └── README.md             # Frontend docs
 ├── config/
 │   ├── routes.rb             # API routes
 │   ├── database.yml          # Database config
@@ -378,7 +418,7 @@ shop_hub/
 │   ├── migrate/              # Database migrations
 │   ├── seeds.rb              # Sample data
 │   └── schema.rb             # Database schema
-├── spec/                     # RSpec tests
+├── spec/                     # RSpec tests (200 passing)
 │   ├── models/
 │   ├── requests/
 │   ├── controllers/
@@ -388,8 +428,11 @@ shop_hub/
 │       ├── swagger.yaml
 │       └── index.html
 ├── scripts/
-│   └── api_tests/            # Shell scripts for API testing
+│   ├── api_tests/            # Shell scripts for API testing
+│   ├── start.sh              # Start backend + frontend
+│   └── stop.sh               # Stop all servers
 ├── docs/                     # Project documentation
+├── FRONTEND_SETUP.md         # Frontend guide
 └── README.md                 # This file
 ```
 
@@ -578,6 +621,8 @@ For questions or support, please contact the development team.
 
 ## 🎯 Quick Start Summary
 
+### Backend Setup
+
 ```bash
 # 1. Install dependencies
 bundle install
@@ -585,16 +630,74 @@ bundle install
 # 2. Setup database
 rails db:create db:migrate db:seed
 
-# 3. Start server
+# 3. Start Rails API
 rails server
-
-# 4. Test API
-./scripts/api_tests/6_complete_workflow.sh
-
-# 5. View API docs
-open http://localhost:3000/api-docs
 ```
 
 **API is now running at `http://localhost:3000/api/v1`**
+
+### Frontend Setup
+
+```bash
+# 1. Install dependencies
+cd frontend
+npm install
+
+# 2. Start React app
+npm run dev
+```
+
+**Frontend is now running at `http://localhost:5173`**
+
+### Or Start Everything at Once
+
+```bash
+# Start both backend and frontend
+./scripts/start.sh
+
+# Stop everything
+./scripts/stop.sh
+```
+
+### Test Everything
+
+```bash
+# Test API (shell scripts)
+./scripts/api_tests/6_complete_workflow.sh
+
+# View API docs
+open http://localhost:3000/api-docs
+
+# Open application
+open http://localhost:5173
+```
+
+---
+
+## 🌐 Frontend Application
+
+The ShopHub frontend is a modern React + TypeScript application with:
+
+### Features
+- ✅ User authentication (signup/login)
+- ✅ Product browsing with search and filters
+- ✅ Shopping cart management
+- ✅ Order placement and tracking
+- ✅ Responsive design (mobile-first)
+- ✅ Real-time cart updates
+
+### Tech Stack
+- React 18 + TypeScript
+- Vite (blazing fast dev server)
+- Tailwind CSS (modern styling)
+- React Router (navigation)
+- Zustand (state management)
+- Axios (API client)
+- TanStack Query (data fetching)
+
+### Documentation
+See `frontend/README.md` and `FRONTEND_SETUP.md` for detailed frontend documentation.
+
+---
 
 Enjoy building with ShopHub! 🛍️

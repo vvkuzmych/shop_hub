@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    background-color: theme(colors.gray.50);
+    color: theme(colors.gray.900);
+  }
+}
+
+@layer utilities {
+  .btn-primary {
+    background-color: theme(colors.blue.600);
+    color: theme(colors.white);
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    transition: background-color 200ms;
+  }
+  
+  .btn-primary:hover {
+    background-color: theme(colors.blue.700);
+  }
+  
+  .btn-secondary {
+    background-color: theme(colors.gray.200);
+    color: theme(colors.gray.900);
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    transition: background-color 200ms;
+  }
+  
+  .btn-secondary:hover {
+    background-color: theme(colors.gray.300);
+  }
+  
+  .input-field {
+    width: 100%;
+    padding: 0.5rem 1rem;
+    border: 1px solid theme(colors.gray.300);
+    border-radius: 0.5rem;
+    outline: none;
+    transition: all 200ms;
+  }
+  
+  .input-field:focus {
+    ring: 2px solid theme(colors.blue.500);
+    border-color: transparent;
+  }
+  
+  .card {
+    background-color: theme(colors.white);
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+    padding: 1.5rem;
+    transition: box-shadow 200ms;
+  }
+  
+  .card:hover {
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  }
+}

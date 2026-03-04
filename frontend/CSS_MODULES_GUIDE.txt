@@ -1,0 +1,99 @@
+CSS MODULES ARCHITECTURE
+========================
+
+All styles have been extracted from inline className attributes into separate
+CSS module files (.module.css) following React best practices for style organization.
+
+STRUCTURE:
+----------
+
+Each component/page has its own CSS module file:
+
+Components:
+  - src/components/Navbar.tsx → src/components/Navbar.module.css
+  
+Pages:
+  - src/pages/Home.tsx → src/pages/Home.module.css
+  - src/pages/Login.tsx → src/pages/Login.module.css
+  - src/pages/Signup.tsx → src/pages/Signup.module.css
+  - src/pages/Products.tsx → src/pages/Products.module.css
+  - src/pages/ProductDetail.tsx → src/pages/ProductDetail.module.css
+  - src/pages/Cart.tsx → src/pages/Cart.module.css
+  - src/pages/Orders.tsx → src/pages/Orders.module.css
+
+USAGE PATTERN:
+--------------
+
+1. Import the CSS module in your component:
+   import styles from "./ComponentName.module.css";
+
+2. Apply styles using the styles object:
+   <div className={styles.container}>...</div>
+
+3. Combine multiple classes:
+   <div className={`${styles.card} ${styles.active}`}>...</div>
+
+4. Conditional classes:
+   <div className={styles[isActive ? 'active' : 'inactive']}>...</div>
+
+BENEFITS:
+---------
+
+1. Scoped Styles: Each CSS module is locally scoped, preventing style conflicts
+2. Co-location: Styles live next to the components that use them
+3. Maintainability: Easy to find and update component-specific styles
+4. Type Safety: CSS class names are checked at build time
+5. Performance: Unused styles are automatically tree-shaken
+6. Readability: Component logic is cleaner without long className strings
+
+CSS CONVENTIONS:
+----------------
+
+1. Use camelCase for class names (e.g., .productCard instead of .product-card)
+2. BEM-like naming for nested elements (e.g., .cardTitle, .cardContent)
+3. Plain CSS without preprocessor syntax for maximum compatibility
+4. Responsive breakpoints use standard media queries
+5. Color palette follows the design system:
+   - Primary: #2563eb (blue-600)
+   - Secondary: #e5e7eb (gray-200)
+   - Success: #16a34a (green-600)
+   - Danger: #dc2626 (red-600)
+   - Warning: #eab308 (yellow-500)
+
+MIGRATION NOTES:
+----------------
+
+The refactor moved from:
+  - Inline Tailwind classes (className="bg-white p-4 rounded-lg")
+  
+To:
+  - CSS modules (className={styles.card})
+  - Plain CSS in .module.css files
+
+This provides better separation of concerns while maintaining all the original
+styling and responsive behavior.
+
+EXTENDING STYLES:
+-----------------
+
+To add new styles:
+
+1. Define the class in the appropriate .module.css file:
+   .newButton {
+     padding: 0.5rem 1rem;
+     background-color: #2563eb;
+     color: white;
+   }
+
+2. Use it in the component:
+   <button className={styles.newButton}>Click me</button>
+
+3. Build will automatically include only used styles
+
+DEBUGGING:
+----------
+
+- CSS modules are compiled and scoped during build
+- Inspect element in browser DevTools to see generated class names
+- Generated names look like: ComponentName_className__hash
+- Source maps are enabled for easier debugging
