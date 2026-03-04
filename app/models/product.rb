@@ -15,6 +15,7 @@ class Product < ApplicationRecord
   # Scopes (ActiveRecord query interface)
   scope :active, -> { where(active: true) }
   scope :in_stock, -> { where("stock > ?", 0) }
+  scope :available, -> { where(active: true).where("stock > ?", 0) }
   scope :by_category, ->(category_id) { where(category_id: category_id) }
   scope :search, ->(query) { where("name ILIKE ? OR description ILIKE ?", "%#{query}%", "%#{query}%") }
 

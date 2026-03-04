@@ -1,50 +1,54 @@
 Rails.application.routes.draw do
-  Rails.application.routes.draw do
-    namespace :api do
-      namespace :v1 do
-        # Authentication
-        post "/signup", to: "auth#signup"
-        post "/login", to: "auth#login"
-        delete "/logout", to: "auth#logout"
+  # Devise routes OUTSIDE namespace to avoid conflicts
+  devise_for :users, path: "api/v1", path_names: {
+    sign_in: "login",
+    sign_out: "logout",
+    registration: "signup"
+  }, controllers: {
+    sessions: "api/v1/sessions",
+    registrations: "api/v1/registrations",
+    passwords: "api/v1/passwords"
+  }
 
-        # Resources (RESTful routes)
-        resources :products do
-          resources :reviews, only: [ :index, :create ]
+  namespace :api do
+    namespace :v1 do
+      # Resources (RESTful routes)
+      resources :products do
+        resources :reviews, only: [ :index, :create ]
 
-          collection do
-            get :search
-            get :featured
-          end
+        collection do
+          get :search
+          get :featured
         end
+      end
 
-        resources :categories do
-          member do
-            get :products
-          end
+      resources :categories do
+        member do
+          get :products
         end
+      end
 
-        resources :orders, only: [ :index, :show, :create, :update ] do
-          member do
-            patch :cancel
-          end
+      resources :orders, only: [ :index, :show, :create, :update ] do
+        member do
+          patch :cancel
         end
+      end
 
-        # Cart
-        resource :cart, only: [] do
-          post :add_item
-          delete :remove_item
-          patch :update_quantity
-          get :items
-          delete :clear
-        end
+      # Cart
+      resource :cart, only: [] do
+        post :add_item
+        delete :remove_item
+        patch :update_quantity
+        get :items
+        delete :clear
+      end
 
-        # Admin routes
-        namespace :admin do
-          resources :products
-          resources :categories
-          resources :orders, only: [ :index, :show, :update ]
-          resources :users, only: [ :index, :show ]
-        end
+      # Admin routes
+      namespace :admin do
+        resources :products
+        resources :categories
+        resources :orders, only: [ :index, :show, :update ]
+        resources :users, only: [ :index, :show ]
       end
     end
   end

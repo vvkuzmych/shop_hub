@@ -43,7 +43,7 @@ RSpec.describe User, type: :model do
     end
   end
 
-  # Password tests (has_secure_password)
+  # Password tests (Devise)
   describe "password" do
     it "requires password on create" do
       user = build(:user, password: nil)
@@ -52,8 +52,8 @@ RSpec.describe User, type: :model do
 
     it "authenticates with correct password" do
       user = create(:user, password: "password123")
-      expect(user.authenticate("password123")).to eq(user)
-      expect(user.authenticate("wrong")).to be false
+      expect(user.valid_password?("password123")).to be true
+      expect(user.valid_password?("wrong")).to be false
     end
   end
 

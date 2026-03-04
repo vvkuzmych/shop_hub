@@ -28,5 +28,10 @@ module ShopHub
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
+
+    # Add session store for Devise compatibility (but JWT doesn't use it)
+    config.session_store :cookie_store, key: "_shop_hub_session"
+    config.middleware.use ActionDispatch::Cookies
+    config.middleware.use config.session_store, config.session_options
   end
 end
