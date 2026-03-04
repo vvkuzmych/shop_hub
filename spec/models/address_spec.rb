@@ -1,3 +1,25 @@
+# == Schema Information
+#
+# Table name: addresses
+#
+#  id               :bigint           not null, primary key
+#  address_type     :string
+#  addressable_type :string           not null
+#  city             :string           not null
+#  country          :string           default("USA"), not null
+#  state            :string
+#  street           :string           not null
+#  zip_code         :string           not null
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  addressable_id   :bigint           not null
+#
+# Indexes
+#
+#  index_addresses_on_address_type                         (address_type)
+#  index_addresses_on_addressable                          (addressable_type,addressable_id)
+#  index_addresses_on_addressable_type_and_addressable_id  (addressable_type,addressable_id)
+#
 require "rails_helper"
 
 RSpec.describe Address, type: :model do

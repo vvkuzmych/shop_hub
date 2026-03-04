@@ -39,6 +39,9 @@ gem "devise"
 gem "devise-jwt"       # JWT authentication
 gem "pundit"           # Authorization
 
+# Payment processing
+gem "stripe"           # Stripe payment integration
+
 # Add HTTP asset caching/compression and X-Sendfile acceleration to Puma [https://github.com/basecamp/thruster/]
 gem "thruster", require: false
 

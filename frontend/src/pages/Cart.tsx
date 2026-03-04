@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { cartApi } from "../api/cart";
-import { ordersApi } from "../api/orders";
 import { useCartStore } from "../store/cartStore";
 import { ShoppingBag, Trash2, Plus, Minus } from "lucide-react";
 import styles from "./Cart.module.css";
@@ -9,8 +8,7 @@ import styles from "./Cart.module.css";
 const Cart = () => {
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
-  const [checkingOut, setCheckingOut] = useState(false);
-  const { items, total, setCart, clearCart } = useCartStore();
+  const { items, total, setCart } = useCartStore();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -54,24 +52,8 @@ const Cart = () => {
     }
   };
 
-  const handleCheckout = async () => {
-    setCheckingOut(true);
-    try {
-      const orderItems = items.map((item) => ({
-        product_id: item.product_id,
-        quantity: item.quantity,
-      }));
-
-      await ordersApi.create({ items: orderItems });
-      clearCart();
-      await cartApi.clearCart();
-      navigate("/orders");
-    } catch (error: any) {
-      console.error("Checkout failed:", error);
-      alert(error.response?.data?.error || "Checkout failed. Please try again.");
-    } finally {
-      setCheckingOut(false);
-    }
+  const handleCheckout = () => {
+    navigate("/checkout");
   };
 
   if (loading) {
@@ -178,10 +160,9 @@ const Cart = () => {
 
             <button
               onClick={handleCheckout}
-              disabled={checkingOut}
               className={styles.checkoutButton}
             >
-              {checkingOut ? "Processing..." : "Proceed to Checkout"}
+              Proceed to Checkout
             </button>
 
             <button

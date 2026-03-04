@@ -5,8 +5,11 @@ import Home from "./pages/Home";
 import Products from "./pages/Products";
 import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
+import Payment from "./pages/Payment";
 import Orders from "./pages/Orders";
 import OrderDetail from "./pages/OrderDetail";
+import OrderTracking from "./pages/OrderTracking";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import PrivateRoute from "./components/PrivateRoute";
@@ -39,6 +42,30 @@ function App() {
                 element={
                   <PrivateRoute>
                     <Cart />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/checkout"
+                element={
+                  <PrivateRoute>
+                    <Checkout />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/orders/:id/payment"
+                element={
+                  <PrivateRoute>
+                    <Payment />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/orders/:id/track"
+                element={
+                  <PrivateRoute>
+                    <OrderTracking />
                   </PrivateRoute>
                 }
               />

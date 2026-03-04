@@ -2,13 +2,17 @@ module Orders
   class CreateService
     attr_reader :order, :errors
 
-    def self.call(user:, items:)
-      new(user: user, items: items).call
+    def self.call(user:, items:, delivery_method: 'delivery', delivery_address: nil, notes: nil)
+      new(user: user, items: items, delivery_method: delivery_method, 
+          delivery_address: delivery_address, notes: notes).call
     end
 
-    def initialize(user:, items:)
+    def initialize(user:, items:, delivery_method: 'delivery', delivery_address: nil, notes: nil)
       @user = user
       @items = items
+      @delivery_method = delivery_method
+      @delivery_address = delivery_address
+      @notes = notes
       @order = nil
       @errors = []
     end
@@ -39,10 +43,21 @@ module Orders
         @errors << "No items provided"
         raise StandardError, "No items provided"
       end
+      
+      if @delivery_method == 'delivery' && @delivery_address.blank?
+        @errors << "Delivery address is required for delivery orders"
+        raise StandardError, "Delivery address required"
+      end
     end
 
     def create_order!
-      @order = @user.orders.build(status: :pending)
+      @order = @user.orders.build(
+        status: :pending,
+        payment_status: :unpaid,
+        delivery_method: @delivery_method,
+        delivery_address: @delivery_address,
+        notes: @notes
+      )
     end
 
     def create_order_items!

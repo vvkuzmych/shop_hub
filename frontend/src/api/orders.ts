@@ -6,6 +6,24 @@ export interface CreateOrderData {
     product_id: number;
     quantity: number;
   }>;
+  delivery_method?: "delivery" | "pickup";
+  delivery_address?: string;
+  notes?: string;
+}
+
+export interface TrackingData {
+  data: {
+    id: string;
+    status: string;
+    payment_status: string;
+    delivery_method: string;
+    tracking_number: string | null;
+    estimated_delivery_date: string | null;
+    progress_percentage: number;
+    total_amount: number;
+    created_at: string;
+    updated_at: string;
+  };
 }
 
 export const ordersApi = {
@@ -28,6 +46,11 @@ export const ordersApi = {
 
   cancel: async (id: string) => {
     const response = await api.patch<{ data: Order }>(`/orders/${id}/cancel`);
+    return response.data;
+  },
+
+  track: async (id: string) => {
+    const response = await api.get<TrackingData>(`/orders/${id}/track`);
     return response.data;
   },
 };

@@ -37,7 +37,13 @@ Rails.application.routes.draw do
       resources :orders, only: [ :index, :show, :create, :update ] do
         member do
           patch :cancel
+          get :track
         end
+      end
+      
+      namespace :payments do
+        post :create_intent
+        post :webhook
       end
 
       # Cart

@@ -95,6 +95,25 @@
   border-color: #fecaca;
 }
 
+.trackButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  color: white;
+  background-color: #2563eb;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.trackButton:hover {
+  background-color: #1d4ed8;
+}
+
 .cancelButton {
   display: flex;
   align-items: center;

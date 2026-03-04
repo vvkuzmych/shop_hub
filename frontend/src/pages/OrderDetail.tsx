@@ -147,28 +147,34 @@ const OrderDetail = () => {
       </button>
 
       <div className={styles.card}>
-        <div className={styles.header}>
-          <div className={styles.titleSection}>
-            <h1 className={styles.title}>Order #{order.id}</h1>
-            <div className={styles.statusRow}>
-              <span className={`${styles.statusBadge} ${getStatusClass(order.status)}`}>
-                {getStatusIcon(order.status)}
-                <span>{order.status.toUpperCase()}</span>
-              </span>
+          <div className={styles.header}>
+            <div className={styles.titleSection}>
+              <h1 className={styles.title}>Order #{order.id}</h1>
+              <div className={styles.statusRow}>
+                <span className={`${styles.statusBadge} ${getStatusClass(order.status)}`}>
+                  {getStatusIcon(order.status)}
+                  <span>{order.status.toUpperCase()}</span>
+                </span>
+              </div>
+            </div>
+
+            <div className="flex gap-2">
+              <Link to={`/orders/${order.id}/track`} className={styles.trackButton}>
+                Track Order
+              </Link>
+              
+              {order.status === "pending" && (
+                <button
+                  onClick={handleCancel}
+                  disabled={canceling}
+                  className={styles.cancelButton}
+                >
+                  <XCircle className="w-5 h-5" />
+                  <span>{canceling ? "Canceling..." : "Cancel Order"}</span>
+                </button>
+              )}
             </div>
           </div>
-
-          {order.status === "pending" && (
-            <button
-              onClick={handleCancel}
-              disabled={canceling}
-              className={styles.cancelButton}
-            >
-              <XCircle className="w-5 h-5" />
-              <span>{canceling ? "Canceling..." : "Cancel Order"}</span>
-            </button>
-          )}
-        </div>
 
         <div className={styles.metaSection}>
           <div className={styles.metaItem}>

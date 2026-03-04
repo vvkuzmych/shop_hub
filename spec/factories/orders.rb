@@ -2,16 +2,25 @@
 #
 # Table name: orders
 #
-#  id           :bigint           not null, primary key
-#  status       :integer
-#  total_amount :decimal(, )
-#  created_at   :datetime         not null
-#  updated_at   :datetime         not null
-#  user_id      :bigint           not null
+#  id                      :bigint           not null, primary key
+#  delivery_address        :text
+#  delivery_method         :integer          default("delivery"), not null
+#  estimated_delivery_date :datetime
+#  notes                   :text
+#  payment_status          :integer          default("unpaid"), not null
+#  status                  :integer
+#  total_amount            :decimal(, )
+#  tracking_number         :string
+#  created_at              :datetime         not null
+#  updated_at              :datetime         not null
+#  payment_intent_id       :string
+#  user_id                 :bigint           not null
 #
 # Indexes
 #
-#  index_orders_on_user_id  (user_id)
+#  index_orders_on_payment_intent_id  (payment_intent_id)
+#  index_orders_on_tracking_number    (tracking_number)
+#  index_orders_on_user_id            (user_id)
 #
 # Foreign Keys
 #
