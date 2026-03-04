@@ -41,6 +41,7 @@
     <orderEntry type="library" scope="PROVIDED" name="activestorage (v8.1.2, rbenv: 3.3.6) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="activesupport (v8.1.2, rbenv: 3.3.6) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="addressable (v2.8.9, rbenv: 3.3.6) [gem]" level="application" />
+    <orderEntry type="library" scope="TEST" name="annot8 (v1.0.1, rbenv: 3.3.6) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="ast (v2.4.3, rbenv: 3.3.6) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="base64 (v0.3.0, rbenv: 3.3.6) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="bcrypt (v3.1.21, rbenv: 3.3.6) [gem]" level="application" />

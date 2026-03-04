@@ -1,6 +1,10 @@
 Rails.application.routes.draw do
-  mount Rswag::Ui::Engine => '/api-docs'
-  mount Rswag::Api::Engine => '/api-docs'
+  # Mount Swagger UI only in development
+  if Rails.env.development? && defined?(Rswag)
+    mount Rswag::Ui::Engine => "/api-docs"
+    mount Rswag::Api::Engine => "/api-docs"
+  end
+
   # Devise routes OUTSIDE namespace to avoid conflicts
   devise_for :users, path: "api/v1", path_names: {
     sign_in: "login",

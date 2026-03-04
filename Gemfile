@@ -68,6 +68,9 @@ group :development, :test do
 
   # API documentation with Swagger/OpenAPI
   gem "rswag-specs"
+
+  # Model annotations (Rails 8+ compatible fork)
+  gem "annot8"
 end
 
 group :development do

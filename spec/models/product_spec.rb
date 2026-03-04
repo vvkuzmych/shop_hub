@@ -1,3 +1,25 @@
+# == Schema Information
+#
+# Table name: products
+#
+#  id          :bigint           not null, primary key
+#  active      :boolean
+#  description :text
+#  featured    :boolean          default(FALSE), not null
+#  name        :string
+#  price       :decimal(, )
+#  sku         :string
+#  stock       :integer
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#  category_id :integer
+#
+# Indexes
+#
+#  index_products_on_featured  (featured)
+#  index_products_on_sku       (sku) UNIQUE
+#
+
 require "rails_helper"
 
 RSpec.describe Product, type: :model do
