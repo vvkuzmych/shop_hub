@@ -145,10 +145,14 @@ GET    /api/v1/admin/users/:id
 
 ## 📊 Test Coverage Summary
 
-**Total Tests:** 130 examples
-- ✅ **130 passing**
+**Total Tests:** 153 examples
+- ✅ **153 passing** (includes orders, search/filtering, and all previous features)
 - ⏸️ **1 pending** (JwtDenylist - can be implemented if needed)
 - ❌ **0 failures**
+
+**New Test Coverage (this session):**
+- +13 tests for customer order management
+- +10 tests for product search & filtering
 
 **Test Breakdown:**
 - Model specs: 70 tests (User, Product, Order, OrderItem, Category, Review, CartItem)

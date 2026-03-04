@@ -17,6 +17,8 @@ module Api
         render json: OrderSerializer.new(@order, {
           include: [ :order_items, "order_items.product" ]
         }).serializable_hash
+      rescue ActiveRecord::RecordNotFound
+        render json: { error: "Order not found" }, status: :not_found
       end
 
       # POST /api/v1/orders
@@ -43,6 +45,8 @@ module Api
         else
           render json: { error: "Cannot cancel this order" }, status: :unprocessable_entity
         end
+      rescue ActiveRecord::RecordNotFound
+        render json: { error: "Order not found" }, status: :not_found
       end
     end
   end

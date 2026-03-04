@@ -1,18 +1,16 @@
 module Orders
   class CreateService
-    # Service Object pattern для складної бізнес-логіки
+    attr_reader :order, :errors
 
-    attr_reader :user, :items, :order, :errors
+    def self.call(user:, items:)
+      new(user: user, items: items).call
+    end
 
     def initialize(user:, items:)
       @user = user
       @items = items
+      @order = nil
       @errors = []
-    end
-
-    # Class method для виклику
-    def self.call(user:, items:)
-      new(user: user, items: items).call
     end
 
     def call
@@ -20,57 +18,62 @@ module Orders
         validate_items!
         create_order!
         create_order_items!
-        update_stock!
-        send_notifications!
+        clear_cart! if @clear_cart
+        enqueue_confirmation_job
       end
 
       self
-    rescue StandardError => e
+    rescue ActiveRecord::RecordInvalid, StandardError => e
       @errors << e.message
       self
     end
 
     def success?
-      errors.empty?
+      @errors.empty? && @order&.persisted?
     end
 
     private
 
     def validate_items!
-      raise "No items provided" if items.blank?
-
-      items.each do |item|
-        product = Product.find(item[:product_id])
-        raise "#{product.name} is out of stock" unless product.stock >= item[:quantity]
+      if @items.blank?
+        @errors << "No items provided"
+        raise StandardError, "No items provided"
       end
     end
 
     def create_order!
-      @order = user.orders.create!(status: :pending)
+      @order = @user.orders.build(status: :pending)
     end
 
     def create_order_items!
-      items.each do |item|
-        product = Product.find(item[:product_id])
+      @items.each do |item_params|
+        product = Product.find(item_params[:product_id])
 
-        @order.order_items.create!(
+        unless product.in_stock? && product.stock >= item_params[:quantity].to_i
+          raise StandardError, "Product #{product.name} is out of stock"
+        end
+
+        @order.order_items.build(
           product: product,
-          quantity: item[:quantity],
+          quantity: item_params[:quantity],
           price: product.price
         )
+
+        # Decrease stock
+        product.update!(stock: product.stock - item_params[:quantity].to_i)
       end
+
+      @order.save!
     end
 
-    def update_stock!
-      items.each do |item|
-        product = Product.find(item[:product_id])
-        product.decrement!(:stock, item[:quantity])
-      end
+    def clear_cart!
+      # Optional: clear cart items that were ordered
+      product_ids = @items.map { |i| i[:product_id] }
+      @user.cart_items.where(product_id: product_ids).destroy_all
     end
 
-    def send_notifications!
-      # Sidekiq background job
-      OrderConfirmationJob.perform_later(@order.id)
+    def enqueue_confirmation_job
+      OrderConfirmationJob.perform_later(@order.id) if @order.persisted?
     end
   end
 end

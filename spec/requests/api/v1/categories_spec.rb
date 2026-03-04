@@ -3,8 +3,8 @@ require "rails_helper"
 RSpec.describe "Api::V1::Categories", type: :request do
   let!(:parent_category) { create(:category, name: "Electronics", parent: nil) }
   let!(:child_category) { create(:category, name: "Phones", parent: parent_category) }
-  let!(:product1) { create(:product, category: child_category) }
-  let!(:product2) { create(:product, category: child_category) }
+  let!(:product1) { create(:product, category: child_category, active: true, stock: 10) }
+  let!(:product2) { create(:product, category: child_category, active: true, stock: 10) }
 
   describe "GET /api/v1/categories" do
     it "returns all root categories with subcategories" do
