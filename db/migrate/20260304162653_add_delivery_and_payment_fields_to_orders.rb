@@ -7,7 +7,7 @@ class AddDeliveryAndPaymentFieldsToOrders < ActiveRecord::Migration[8.1]
     add_column :orders, :notes, :text
     add_column :orders, :delivery_address, :text
     add_column :orders, :estimated_delivery_date, :datetime
-    
+
     add_index :orders, :payment_intent_id
     add_index :orders, :tracking_number
   end
