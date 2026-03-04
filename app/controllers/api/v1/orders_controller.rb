@@ -38,11 +38,11 @@ module Api
           render json: { errors: result.errors }, status: :unprocessable_entity
         end
       end
-      
+
       # GET /api/v1/orders/:id/track
       def track
         @order = current_user.orders.find(params[:id])
-        
+
         render json: {
           data: {
             id: @order.id,

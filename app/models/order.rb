@@ -1,31 +1,3 @@
-# == Schema Information
-#
-# Table name: orders
-#
-#  id                      :bigint           not null, primary key
-#  delivery_address        :text
-#  delivery_method         :integer          default("delivery"), not null
-#  estimated_delivery_date :datetime
-#  notes                   :text
-#  payment_status          :integer          default("unpaid"), not null
-#  status                  :integer
-#  total_amount            :decimal(, )
-#  tracking_number         :string
-#  created_at              :datetime         not null
-#  updated_at              :datetime         not null
-#  payment_intent_id       :string
-#  user_id                 :bigint           not null
-#
-# Indexes
-#
-#  index_orders_on_payment_intent_id  (payment_intent_id)
-#  index_orders_on_tracking_number    (tracking_number)
-#  index_orders_on_user_id            (user_id)
-#
-# Foreign Keys
-#
-#  fk_rails_...  (user_id => users.id)
-#
 class Order < ApplicationRecord
   # Associations
   belongs_to :user
@@ -38,7 +10,7 @@ class Order < ApplicationRecord
   has_many :attachments, as: :attachable, dependent: :destroy
 
   # Enums (Rails 8 syntax)
-  enum :status, { 
+  enum :status, {
     pending: 0,           # Order created, awaiting payment
     payment_received: 1,  # Payment confirmed
     processing: 2,        # Order being prepared
@@ -50,18 +22,18 @@ class Order < ApplicationRecord
     picked_up: 8,         # Customer picked up order
     cancelled: 9          # Order cancelled
   }
-  
+
   enum :delivery_method, {
     delivery: 0,          # Home delivery
     pickup: 1             # Store pickup
   }
-  
+
   enum :payment_status, {
-    unpaid: 0,            # Payment not received
-    pending: 1,           # Payment processing
-    paid: 2,              # Payment successful
-    failed: 3,            # Payment failed
-    refunded: 4           # Payment refunded
+    payment_unpaid: 0,       # Payment not received
+    payment_pending: 1,      # Payment processing
+    payment_paid: 2,         # Payment successful
+    payment_failed: 3,       # Payment failed
+    payment_refunded: 4      # Payment refunded
   }
 
   # Validations
@@ -79,14 +51,14 @@ class Order < ApplicationRecord
   # Scopes
   scope :recent, -> { order(created_at: :desc) }
   scope :by_status, ->(status) { where(status: status) }
-  scope :paid, -> { where(payment_status: :paid) }
-  scope :unpaid, -> { where(payment_status: [:unpaid, :pending]) }
-  
+  scope :paid, -> { where(payment_status: :payment_paid) }
+  scope :unpaid, -> { where(payment_status: [ :payment_unpaid, :payment_pending ]) }
+
   # Public methods
   def can_be_cancelled?
     pending? || payment_received? || processing?
   end
-  
+
   def next_status
     case status.to_sym
     when :pending then :payment_received
@@ -99,7 +71,7 @@ class Order < ApplicationRecord
     else nil
     end
   end
-  
+
   def progress_percentage
     status_order = {
       pending: 0,
@@ -125,7 +97,7 @@ class Order < ApplicationRecord
   def send_confirmation_email
     OrderMailer.confirmation(self).deliver_later
   end
-  
+
   def send_status_update_email
     OrderMailer.status_update(self).deliver_later
   end
