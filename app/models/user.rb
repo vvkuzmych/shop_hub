@@ -4,7 +4,8 @@ class User < ApplicationRecord
   # Associations
   has_many :orders, dependent: :destroy
   has_many :reviews, dependent: :destroy
-  has_many :cart_items, dependent: :destroy
+  # TODO: Uncomment when CartItem model is created
+  # has_many :cart_items, dependent: :destroy
 
   # Enums (Rails 8 syntax)
   enum :role, { customer: 0, admin: 1 }
