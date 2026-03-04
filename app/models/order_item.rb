@@ -11,6 +11,6 @@ class OrderItem < ApplicationRecord
   private
 
   def set_price
-    self.price = product.price if price.nil?
+    self.price = product.price if price.nil? && product.present?
   end
 end

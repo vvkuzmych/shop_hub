@@ -31,7 +31,7 @@ gem "sidekiq"
 
 # API
 gem "rack-cors"        # CORS для React frontend
-gem "fast_jsonapi"     # Швидка JSON serialization
+gem "jsonapi-serializer"  # JSON API serialization
 gem "kaminari"         # Pagination
 
 # Authentication
@@ -65,4 +65,9 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+end
+
+group :test do
+  gem "database_cleaner-active_record"
+  gem "shoulda-matchers"
 end

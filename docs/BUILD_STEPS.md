@@ -793,17 +793,17 @@ require "rails_helper"
 RSpec.describe Product, type: :model do
   # Association tests (shoulda-matchers)
   describe "associations" do
-    it { should belong_to(:category) }
-    it { should have_many(:order_items) }
-    it { should have_many(:reviews) }
+    it { is_expected.to belong_to(:category) }
+    it { is_expected.to have_many(:order_items) }
+    it { is_expected.to have_many(:reviews) }
   end
   
   # Validation tests
   describe "validations" do
-    it { should validate_presence_of(:name) }
-    it { should validate_presence_of(:price) }
-    it { should validate_numericality_of(:price).is_greater_than(0) }
-    it { should validate_uniqueness_of(:sku) }
+    it { is_expected.to validate_presence_of(:name) }
+    it { is_expected.to validate_presence_of(:price) }
+    it { is_expected.to validate_numericality_of(:price).is_greater_than(0) }
+    it { is_expected.to validate_uniqueness_of(:sku) }
   end
   
   # Scope tests

@@ -4,21 +4,15 @@ class Order < ApplicationRecord
   has_many :order_items, dependent: :destroy
   has_many :products, through: :order_items
 
-  # Enums
-  enum status: {
-    pending: 0,
-    confirmed: 1,
-    shipped: 2,
-    delivered: 3,
-    cancelled: 4
-  }
+  # Enums (Rails 8 syntax)
+  enum :status, { pending: 0, confirmed: 1, shipped: 2, delivered: 3, cancelled: 4 }
 
   # Validations
   validates :total_amount, presence: true, numericality: { greater_than: 0 }
   validates :status, presence: true
 
   # Callbacks
-  before_create :calculate_total
+  before_validation :calculate_total, on: :create
   after_create :send_confirmation_email
 
   # Scopes

@@ -1,7 +1,10 @@
 FactoryBot.define do
   factory :order do
-    user { nil }
-    total_amount { "9.99" }
-    status { 1 }
+    association :user
+    status { :pending }
+
+    after(:build) do |order|
+      order.order_items << build(:order_item, order: order) if order.order_items.empty?
+    end
   end
 end

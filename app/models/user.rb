@@ -6,8 +6,8 @@ class User < ApplicationRecord
   has_many :reviews, dependent: :destroy
   has_many :cart_items, dependent: :destroy
 
-  # Enums (використання Ruby enum)
-  enum role: { customer: 0, admin: 1 }
+  # Enums (Rails 8 syntax)
+  enum :role, { customer: 0, admin: 1 }
 
   # Validations
   validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
