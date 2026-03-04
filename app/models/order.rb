@@ -17,12 +17,16 @@
 #
 #  fk_rails_...  (user_id => users.id)
 #
-
 class Order < ApplicationRecord
   # Associations
   belongs_to :user
   has_many :order_items, dependent: :destroy
   has_many :products, through: :order_items
+
+  # Polymorphic associations
+  has_many :comments, as: :commentable, dependent: :destroy
+  has_many :addresses, as: :addressable, dependent: :destroy
+  has_many :attachments, as: :attachable, dependent: :destroy
 
   # Enums (Rails 8 syntax)
   enum :status, { pending: 0, confirmed: 1, shipped: 2, delivered: 3, cancelled: 4 }

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_04_131658) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_04_142720) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -42,6 +42,36 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_04_131658) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "addresses", force: :cascade do |t|
+    t.string "address_type"
+    t.bigint "addressable_id", null: false
+    t.string "addressable_type", null: false
+    t.string "city", null: false
+    t.string "country", default: "USA", null: false
+    t.datetime "created_at", null: false
+    t.string "state"
+    t.string "street", null: false
+    t.datetime "updated_at", null: false
+    t.string "zip_code", null: false
+    t.index ["address_type"], name: "index_addresses_on_address_type"
+    t.index ["addressable_type", "addressable_id"], name: "index_addresses_on_addressable"
+    t.index ["addressable_type", "addressable_id"], name: "index_addresses_on_addressable_type_and_addressable_id"
+  end
+
+  create_table "attachments", force: :cascade do |t|
+    t.bigint "attachable_id", null: false
+    t.string "attachable_type", null: false
+    t.datetime "created_at", null: false
+    t.string "file_name", null: false
+    t.integer "file_size"
+    t.string "file_type"
+    t.datetime "updated_at", null: false
+    t.string "url"
+    t.index ["attachable_type", "attachable_id"], name: "index_attachments_on_attachable"
+    t.index ["attachable_type", "attachable_id"], name: "index_attachments_on_attachable_type_and_attachable_id"
+    t.index ["file_type"], name: "index_attachments_on_file_type"
+  end
+
   create_table "cart_items", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.decimal "price", precision: 10, scale: 2
@@ -62,6 +92,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_04_131658) do
     t.integer "position"
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_categories_on_name", unique: true
+  end
+
+  create_table "comments", force: :cascade do |t|
+    t.bigint "commentable_id", null: false
+    t.string "commentable_type", null: false
+    t.text "content"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["commentable_type", "commentable_id"], name: "index_comments_on_commentable"
+    t.index ["commentable_type", "commentable_id"], name: "index_comments_on_commentable_type_and_commentable_id"
+    t.index ["user_id"], name: "index_comments_on_user_id"
   end
 
   create_table "jwt_denylists", force: :cascade do |t|
@@ -137,6 +179,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_04_131658) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "cart_items", "products"
   add_foreign_key "cart_items", "users"
+  add_foreign_key "comments", "users"
   add_foreign_key "order_items", "orders"
   add_foreign_key "order_items", "products"
   add_foreign_key "orders", "users"

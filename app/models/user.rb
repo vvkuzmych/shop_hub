@@ -19,7 +19,6 @@
 #  index_users_on_email                 (email) UNIQUE
 #  index_users_on_reset_password_token  (reset_password_token) UNIQUE
 #
-
 class User < ApplicationRecord
   # Devise modules
   devise :database_authenticatable, :registerable,
@@ -30,6 +29,11 @@ class User < ApplicationRecord
   has_many :orders, dependent: :destroy
   has_many :reviews, dependent: :destroy
   has_many :cart_items, dependent: :destroy
+  has_many :comments, dependent: :destroy
+
+  # Polymorphic associations
+  has_many :addresses, as: :addressable, dependent: :destroy
+  has_many :attachments, as: :attachable, dependent: :destroy
 
   # Enums (Rails 8 syntax)
   enum :role, { customer: 0, admin: 1 }

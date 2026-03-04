@@ -19,7 +19,6 @@
 #  index_products_on_featured  (featured)
 #  index_products_on_sku       (sku) UNIQUE
 #
-
 class Product < ApplicationRecord
   # Associations
   belongs_to :category
@@ -27,6 +26,10 @@ class Product < ApplicationRecord
   has_many :orders, through: :order_items
   has_many :reviews, dependent: :destroy
   has_many_attached :images  # ActiveStorage для зображень
+
+  # Polymorphic associations
+  has_many :comments, as: :commentable, dependent: :destroy
+  has_many :attachments, as: :attachable, dependent: :destroy
 
   # Validations
   validates :name, :price, :stock, presence: true
