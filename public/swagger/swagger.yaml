@@ -867,3 +867,371 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  
+  # Admin - Products Endpoints
+  /api/v1/admin/products:
+    get:
+      tags:
+        - Admin - Products
+      summary: List all products (Admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: per_page
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Products retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Product'
+        '403':
+          description: Forbidden (not admin)
+    
+    post:
+      tags:
+        - Admin - Products
+      summary: Create new product (Admin)
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                product:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    price:
+                      type: number
+                    category_id:
+                      type: integer
+                    stock:
+                      type: integer
+                    active:
+                      type: boolean
+                    featured:
+                      type: boolean
+                  required:
+                    - name
+                    - price
+                    - category_id
+      responses:
+        '201':
+          description: Product created
+        '403':
+          description: Forbidden
+  
+  /api/v1/admin/products/{id}:
+    get:
+      tags:
+        - Admin - Products
+      summary: Get product details (Admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Product found
+        '404':
+          description: Not found
+    
+    patch:
+      tags:
+        - Admin - Products
+      summary: Update product (Admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                product:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    price:
+                      type: number
+                    stock:
+                      type: integer
+                    active:
+                      type: boolean
+                    featured:
+                      type: boolean
+      responses:
+        '200':
+          description: Product updated
+        '403':
+          description: Forbidden
+    
+    delete:
+      tags:
+        - Admin - Products
+      summary: Delete product (Admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Product deleted
+        '403':
+          description: Forbidden
+  
+  # Admin - Categories
+  /api/v1/admin/categories:
+    get:
+      tags:
+        - Admin - Categories
+      summary: List all categories (Admin)
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Categories retrieved
+        '403':
+          description: Forbidden
+    
+    post:
+      tags:
+        - Admin - Categories
+      summary: Create category (Admin)
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                category:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    parent_id:
+                      type: integer
+                      nullable: true
+                  required:
+                    - name
+      responses:
+        '201':
+          description: Category created
+        '403':
+          description: Forbidden
+  
+  /api/v1/admin/categories/{id}:
+    get:
+      tags:
+        - Admin - Categories
+      summary: Get category (Admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Category found
+        '403':
+          description: Forbidden
+    
+    patch:
+      tags:
+        - Admin - Categories
+      summary: Update category (Admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                category:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    parent_id:
+                      type: integer
+      responses:
+        '200':
+          description: Category updated
+        '403':
+          description: Forbidden
+    
+    delete:
+      tags:
+        - Admin - Categories
+      summary: Delete category (Admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Category deleted
+        '403':
+          description: Forbidden
+  
+  # Admin - Orders
+  /api/v1/admin/orders:
+    get:
+      tags:
+        - Admin - Orders
+      summary: List all orders (Admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, confirmed, shipped, delivered, cancelled]
+      responses:
+        '200':
+          description: Orders retrieved
+        '403':
+          description: Forbidden
+  
+  /api/v1/admin/orders/{id}:
+    get:
+      tags:
+        - Admin - Orders
+      summary: Get order details (Admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Order found
+        '403':
+          description: Forbidden
+    
+    patch:
+      tags:
+        - Admin - Orders
+      summary: Update order status (Admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                order:
+                  type: object
+                  properties:
+                    status:
+                      type: string
+                      enum: [pending, confirmed, shipped, delivered, cancelled]
+                  required:
+                    - status
+      responses:
+        '200':
+          description: Order updated
+        '403':
+          description: Forbidden
+  
+  # Admin - Users
+  /api/v1/admin/users:
+    get:
+      tags:
+        - Admin - Users
+      summary: List all users (Admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: role
+          in: query
+          schema:
+            type: string
+            enum: [customer, admin]
+      responses:
+        '200':
+          description: Users retrieved
+        '403':
+          description: Forbidden
+  
+  /api/v1/admin/users/{id}:
+    get:
+      tags:
+        - Admin - Users
+      summary: Get user details (Admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: User found
+        '403':
+          description: Forbidden
