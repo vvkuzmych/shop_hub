@@ -26,6 +26,19 @@ gem "bootsnap", require: false
 # Deploy this application anywhere as a Docker container [https://kamal-deploy.org]
 gem "kamal", require: false
 
+# Background jobs
+gem "sidekiq"
+
+# API
+gem "rack-cors"        # CORS для React frontend
+gem "fast_jsonapi"     # Швидка JSON serialization
+gem "kaminari"         # Pagination
+
+# Authentication
+gem "devise"
+gem "devise-jwt"       # JWT authentication
+gem "pundit"           # Authorization
+
 # Add HTTP asset caching/compression and X-Sendfile acceleration to Puma [https://github.com/basecamp/thruster/]
 gem "thruster", require: false
 
@@ -44,6 +57,11 @@ group :development, :test do
 
   # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
   gem "brakeman", require: false
+  gem "factory_bot_rails"
+  gem "faker"
+  gem "pry-rails"
+  gem 'rspec-rails', '~> 8.0', '>= 8.0.1'
+  gem "rubocop-rails", require: false
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
