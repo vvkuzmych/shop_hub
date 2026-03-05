@@ -30,14 +30,27 @@ module Api
         end
 
         if cart_item.save
+          # Return updated cart
+          cart_items = current_user.cart_items.includes(:product)
           render json: {
             message: "Product added to cart",
-            cart_item: cart_item
+            cart_items: cart_items.map { |item|
+              {
+                id: item.id,
+                product_id: item.product_id,
+                product_name: item.product.name,
+                quantity: item.quantity,
+                price: item.price.to_f,
+                subtotal: item.subtotal.to_f,
+                stock: item.product.stock
+              }
+            },
+            total: cart_items.sum(&:subtotal).to_f
           }, status: :created
         else
           render json: {
             errors: cart_item.errors.full_messages
-          }, status: :unprocessable_entity
+          }, status: :unprocessable_content
         end
       end
 

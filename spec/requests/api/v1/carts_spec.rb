@@ -32,11 +32,14 @@ RSpec.describe "Api::V1::Carts", type: :request do
         expect(response).to have_http_status(:created)
         json = JSON.parse(response.body)
         expect(json["message"]).to eq("Product added to cart")
-        expect(json["cart_item"]["quantity"]).to eq(2)
+        expect(json["cart_items"]).to be_an(Array)
+        expect(json["cart_items"].size).to eq(1)
+        expect(json["cart_items"][0]["quantity"]).to eq(2)
+        expect(json["total"]).to eq(59.98)
       end
 
       it "increases quantity for existing cart item" do
-        create(:cart_item, user: user, product: product, quantity: 1)
+        create(:cart_item, user: user, product: product, quantity: 1, price: 29.99)
 
         expect {
           post "/api/v1/cart/add_item", params: {
@@ -46,6 +49,10 @@ RSpec.describe "Api::V1::Carts", type: :request do
         }.not_to change(CartItem, :count)
 
         expect(response).to have_http_status(:created)
+        json = JSON.parse(response.body)
+        expect(json["cart_items"]).to be_an(Array)
+        expect(json["cart_items"][0]["quantity"]).to eq(3)
+        expect(json["total"]).to eq(89.97)
         cart_item = user.cart_items.find_by(product: product)
         expect(cart_item.quantity).to eq(3)
       end
