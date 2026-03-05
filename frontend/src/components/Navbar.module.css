@@ -53,6 +53,24 @@
   color: #2563eb;
 }
 
+.adminLink {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  background-color: #6366f1;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: background-color 0.2s;
+}
+
+.adminLink:hover {
+  background-color: #4f46e5;
+}
+
 .cartButton {
   position: relative;
   padding: 0.5rem;

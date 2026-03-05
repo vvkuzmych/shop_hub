@@ -1,12 +1,12 @@
 import { Link, useNavigate } from "react-router-dom";
-import { ShoppingCart, User, LogOut, Package } from "lucide-react";
+import { ShoppingCart, User, LogOut, Package, Settings } from "lucide-react";
 import { useAuthStore } from "../store/authStore";
 import { useCartStore } from "../store/cartStore";
 import { authApi } from "../api/auth";
 import styles from "./Navbar.module.css";
 
 const Navbar = () => {
-  const { isAuthenticated, user, logout } = useAuthStore();
+  const { isAuthenticated, user, logout, isAdmin } = useAuthStore();
   const { itemCount } = useCartStore();
   const navigate = useNavigate();
 
@@ -41,6 +41,13 @@ const Navbar = () => {
                 <Link to="/orders" className={styles.navLink}>
                   Orders
                 </Link>
+                
+                {isAdmin() && (
+                  <Link to="/admin/products" className={styles.adminLink}>
+                    <Settings className="w-5 h-5" />
+                    Admin
+                  </Link>
+                )}
 
                 <Link to="/cart" className={styles.cartButton}>
                   <ShoppingCart className="w-6 h-6" />

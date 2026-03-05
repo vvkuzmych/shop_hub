@@ -12,6 +12,9 @@ import OrderDetail from "./pages/OrderDetail";
 import OrderTracking from "./pages/OrderTracking";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import AdminProducts from "./pages/AdminProducts";
+import CreateProduct from "./pages/CreateProduct";
+import EditProduct from "./pages/EditProduct";
 import PrivateRoute from "./components/PrivateRoute";
 
 const queryClient = new QueryClient({
@@ -82,6 +85,30 @@ function App() {
                 element={
                   <PrivateRoute>
                     <OrderDetail />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/admin/products"
+                element={
+                  <PrivateRoute>
+                    <AdminProducts />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/admin/products/new"
+                element={
+                  <PrivateRoute>
+                    <CreateProduct />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/admin/products/:id/edit"
+                element={
+                  <PrivateRoute>
+                    <EditProduct />
                   </PrivateRoute>
                 }
               />
