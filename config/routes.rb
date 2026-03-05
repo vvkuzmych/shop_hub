@@ -40,11 +40,16 @@ Rails.application.routes.draw do
           get :track
         end
       end
-
+      
       namespace :payments do
         post :create_intent
         post :webhook
       end
+
+      # Nova Poshta API integration
+      get "/nova_poshta/cities", to: "nova_poshta#search_cities"
+      get "/nova_poshta/warehouses", to: "nova_poshta#get_warehouses"
+      get "/nova_poshta/postomats", to: "nova_poshta#get_postomats"
 
       # Cart
       resource :cart, only: [] do

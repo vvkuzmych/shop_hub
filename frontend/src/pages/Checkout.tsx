@@ -1,8 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { cartApi } from "../api/cart";
 import { ordersApi } from "../api/orders";
-import { Package, MapPin, Store, CreditCard } from "lucide-react";
+import { novaPoshtaApi } from "../api/novaPoshta";
+import type { NovaPoshtaCity, NovaPoshtaWarehouse, NovaPoshtaPostomat } from "../api/novaPoshta";
+import { Package, MapPin, Store, CreditCard, Truck } from "lucide-react";
 import styles from "./Checkout.module.css";
 import { useCartStore } from "../store/cartStore";
 
@@ -11,7 +13,7 @@ const Checkout = () => {
   const { items, total, clearCart: clearCartStore } = useCartStore();
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
-  const [deliveryMethod, setDeliveryMethod] = useState<"delivery" | "pickup">("delivery");
+  const [deliveryMethod, setDeliveryMethod] = useState<"delivery" | "pickup" | "nova_poshta">("delivery");
   const [deliveryAddress, setDeliveryAddress] = useState({
     street: "",
     city: "",
@@ -19,6 +21,18 @@ const Checkout = () => {
     zipCode: "",
     country: ""
   });
+  const [novaPoshtaData, setNovaPoshtaData] = useState({
+    cityQuery: "",
+    selectedCity: null as NovaPoshtaCity | null,
+    deliveryType: "warehouse" as "warehouse" | "postomat",
+    selectedWarehouse: null as (NovaPoshtaWarehouse | NovaPoshtaPostomat) | null,
+    recipientPhone: ""
+  });
+  const [citySuggestions, setCitySuggestions] = useState<NovaPoshtaCity[]>([]);
+  const [warehouseSuggestions, setWarehouseSuggestions] = useState<(NovaPoshtaWarehouse | NovaPoshtaPostomat)[]>([]);
+  const [loadingCities, setLoadingCities] = useState(false);
+  const [loadingWarehouses, setLoadingWarehouses] = useState(false);
+  const [showCityDropdown, setShowCityDropdown] = useState(false);
   const [notes, setNotes] = useState("");
   const [error, setError] = useState("");
 
@@ -40,7 +54,60 @@ const Checkout = () => {
     setDeliveryAddress(prev => ({ ...prev, [field]: value }));
   };
 
+  // Debounced city search
+  const searchCities = useCallback(async (query: string) => {
+    if (query.length < 2) {
+      setCitySuggestions([]);
+      return;
+    }
+
+    setLoadingCities(true);
+    try {
+      const cities = await novaPoshtaApi.searchCities(query);
+      setCitySuggestions(cities);
+      setShowCityDropdown(true);
+    } catch (error) {
+      console.error("Failed to search cities:", error);
+    } finally {
+      setLoadingCities(false);
+    }
+  }, []);
+
+  // Load warehouses/postomats when city is selected
+  useEffect(() => {
+    const loadWarehouses = async () => {
+      if (!novaPoshtaData.selectedCity) {
+        setWarehouseSuggestions([]);
+        return;
+      }
+
+      setLoadingWarehouses(true);
+      try {
+        let warehouses;
+        if (novaPoshtaData.deliveryType === "postomat") {
+          warehouses = await novaPoshtaApi.getPostomats(novaPoshtaData.selectedCity.ref);
+        } else {
+          warehouses = await novaPoshtaApi.getWarehouses(novaPoshtaData.selectedCity.ref);
+        }
+        setWarehouseSuggestions(warehouses);
+      } catch (error) {
+        console.error("Failed to load warehouses:", error);
+      } finally {
+        setLoadingWarehouses(false);
+      }
+    };
+
+    loadWarehouses();
+  }, [novaPoshtaData.selectedCity, novaPoshtaData.deliveryType]);
+
   const formatAddress = () => {
+    if (deliveryMethod === "nova_poshta") {
+      const cityName = novaPoshtaData.selectedCity?.name || "";
+      const warehouseDesc = novaPoshtaData.selectedWarehouse?.description || "";
+      const phone = novaPoshtaData.recipientPhone;
+      const type = novaPoshtaData.deliveryType === "postomat" ? "Поштомат" : "Відділення";
+      return `Nova Poshta\nТип: ${type}\nМісто: ${cityName}\n${warehouseDesc}\nТелефон: ${phone}`;
+    }
     return `${deliveryAddress.street}\n${deliveryAddress.city}, ${deliveryAddress.state} ${deliveryAddress.zipCode}\n${deliveryAddress.country}`;
   };
 
@@ -50,6 +117,11 @@ const Checkout = () => {
     if (deliveryMethod === "delivery") {
       if (!deliveryAddress.street || !deliveryAddress.city || !deliveryAddress.state || !deliveryAddress.zipCode) {
         setError("Please fill in all delivery address fields");
+        return;
+      }
+    } else if (deliveryMethod === "nova_poshta") {
+      if (!novaPoshtaData.selectedCity || !novaPoshtaData.selectedWarehouse || !novaPoshtaData.recipientPhone) {
+        setError("Будь ласка, заповніть всі поля доставки Нової Пошти");
         return;
       }
     }
@@ -63,7 +135,7 @@ const Checkout = () => {
           quantity: item.quantity
         })),
         delivery_method: deliveryMethod,
-        delivery_address: deliveryMethod === "delivery" ? formatAddress() : undefined,
+        delivery_address: (deliveryMethod === "delivery" || deliveryMethod === "nova_poshta") ? formatAddress() : undefined,
         notes: notes
       };
 
@@ -135,6 +207,17 @@ const Checkout = () => {
                   <div className={styles.deliveryOptionDesc}>Pick up from our store</div>
                 </div>
               </button>
+              
+              <button
+                className={`${styles.deliveryOption} ${deliveryMethod === "nova_poshta" ? styles.deliveryOptionActive : ""}`}
+                onClick={() => setDeliveryMethod("nova_poshta")}
+              >
+                <Truck className={styles.deliveryIcon} />
+                <div>
+                  <div className={styles.deliveryOptionTitle}>Nova Poshta</div>
+                  <div className={styles.deliveryOptionDesc}>Delivery to Nova Poshta warehouse</div>
+                </div>
+              </button>
             </div>
           </div>
 
@@ -201,6 +284,162 @@ const Checkout = () => {
                       placeholder="USA"
                     />
                   </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Nova Poshta Delivery */}
+          {deliveryMethod === "nova_poshta" && (
+            <div className={styles.section}>
+              <h2 className={styles.sectionTitle}>Доставка Новою Поштою</h2>
+              
+              <div className={styles.form}>
+                {/* Delivery Type Selection */}
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Тип доставки</label>
+                  <div className={styles.deliveryTypeButtons}>
+                    <button
+                      type="button"
+                      className={`${styles.deliveryTypeBtn} ${novaPoshtaData.deliveryType === "warehouse" ? styles.deliveryTypeBtnActive : ""}`}
+                      onClick={() => {
+                        setNovaPoshtaData(prev => ({ 
+                          ...prev, 
+                          deliveryType: "warehouse",
+                          selectedWarehouse: null
+                        }));
+                      }}
+                    >
+                      <Store size={20} />
+                      Відділення
+                    </button>
+                    <button
+                      type="button"
+                      className={`${styles.deliveryTypeBtn} ${novaPoshtaData.deliveryType === "postomat" ? styles.deliveryTypeBtnActive : ""}`}
+                      onClick={() => {
+                        setNovaPoshtaData(prev => ({ 
+                          ...prev, 
+                          deliveryType: "postomat",
+                          selectedWarehouse: null
+                        }));
+                      }}
+                    >
+                      <Package size={20} />
+                      Поштомат
+                    </button>
+                  </div>
+                </div>
+
+                {/* City Autocomplete */}
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Місто</label>
+                  <div className={styles.autocompleteWrapper}>
+                    <input
+                      type="text"
+                      value={novaPoshtaData.cityQuery}
+                      onChange={(e) => {
+                        const query = e.target.value;
+                        setNovaPoshtaData(prev => ({ ...prev, cityQuery: query, selectedCity: null }));
+                        searchCities(query);
+                      }}
+                      onFocus={() => {
+                        if (citySuggestions.length > 0) {
+                          setShowCityDropdown(true);
+                        }
+                      }}
+                      className={styles.input}
+                      placeholder="Введіть назву міста (наприклад, Київ, Львів, Одеса)"
+                      autoComplete="off"
+                    />
+                    {loadingCities && (
+                      <div className={styles.autocompleteLoading}>Завантаження...</div>
+                    )}
+                    {showCityDropdown && citySuggestions.length > 0 && (
+                      <div className={styles.autocompleteDropdown}>
+                        {citySuggestions.map((city) => (
+                          <div
+                            key={city.ref}
+                            className={styles.autocompleteItem}
+                            onClick={() => {
+                              setNovaPoshtaData(prev => ({
+                                ...prev,
+                                cityQuery: city.name,
+                                selectedCity: city,
+                                selectedWarehouse: null
+                              }));
+                              setShowCityDropdown(false);
+                            }}
+                          >
+                            <div className={styles.autocompleteCityName}>{city.name}</div>
+                            <div className={styles.autocompleteCityArea}>{city.area}</div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  {novaPoshtaData.selectedCity && (
+                    <p className={styles.fieldHintSuccess}>✓ Вибрано: {novaPoshtaData.selectedCity.name}</p>
+                  )}
+                </div>
+                
+                {/* Warehouse/Postomat Selection */}
+                {novaPoshtaData.selectedCity && (
+                  <div className={styles.formGroup}>
+                    <label className={styles.label}>
+                      {novaPoshtaData.deliveryType === "postomat" ? "Поштомат" : "Відділення"}
+                    </label>
+                    {loadingWarehouses ? (
+                      <div className={styles.loadingWarehouses}>
+                        Завантаження {novaPoshtaData.deliveryType === "postomat" ? "поштоматів" : "відділень"}...
+                      </div>
+                    ) : warehouseSuggestions.length > 0 ? (
+                      <div className={styles.autocompleteWrapper}>
+                        <select
+                          value={novaPoshtaData.selectedWarehouse?.ref || ""}
+                          onChange={(e) => {
+                            const warehouse = warehouseSuggestions.find(w => w.ref === e.target.value);
+                            setNovaPoshtaData(prev => ({ ...prev, selectedWarehouse: warehouse || null }));
+                          }}
+                          className={styles.select}
+                        >
+                          <option value="">
+                            Оберіть {novaPoshtaData.deliveryType === "postomat" ? "поштомат" : "відділення"}
+                          </option>
+                          {warehouseSuggestions.map((warehouse) => (
+                            <option key={warehouse.ref} value={warehouse.ref}>
+                              {warehouse.description}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    ) : (
+                      <p className={styles.fieldHint}>
+                        {novaPoshtaData.deliveryType === "postomat" 
+                          ? "У цьому місті немає поштоматів. Спробуйте обрати відділення."
+                          : "У цьому місті немає відділень."}
+                      </p>
+                    )}
+                    {novaPoshtaData.selectedWarehouse && (
+                      <div className={styles.warehouseDetails}>
+                        <p className={styles.warehouseAddress}>
+                          📍 {novaPoshtaData.selectedWarehouse.short_address || novaPoshtaData.selectedWarehouse.description}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+                
+                {/* Phone Number */}
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Номер телефону одержувача</label>
+                  <input
+                    type="tel"
+                    value={novaPoshtaData.recipientPhone}
+                    onChange={(e) => setNovaPoshtaData(prev => ({ ...prev, recipientPhone: e.target.value }))}
+                    className={styles.input}
+                    placeholder="+380XXXXXXXXX"
+                  />
+                  <p className={styles.fieldHint}>Номер телефону для SMS-повідомлень про доставку</p>
                 </div>
               </div>
             </div>

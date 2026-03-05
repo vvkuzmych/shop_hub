@@ -2,6 +2,7 @@ import api from "./axios";
 import type { CartItem } from "../types";
 
 export interface CartResponse {
+  message?: string;
   cart_items: CartItem[];
   total: number;
 }

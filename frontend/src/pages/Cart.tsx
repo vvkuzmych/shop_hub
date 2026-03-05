@@ -18,9 +18,10 @@ const Cart = () => {
   const fetchCart = async () => {
     try {
       const response = await cartApi.getItems();
-      setCart(response.cart_items, response.total);
+      setCart(response.cart_items || [], response.total || 0);
     } catch (error) {
       console.error("Failed to fetch cart:", error);
+      setCart([], 0);
     } finally {
       setLoading(false);
     }
@@ -32,9 +33,10 @@ const Cart = () => {
     setUpdating(true);
     try {
       const response = await cartApi.updateQuantity(productId, newQuantity);
-      setCart(response.cart_items, response.total);
+      setCart(response.cart_items || [], response.total || 0);
     } catch (error) {
       console.error("Failed to update quantity:", error);
+      await fetchCart();
     } finally {
       setUpdating(false);
     }
@@ -44,9 +46,10 @@ const Cart = () => {
     setUpdating(true);
     try {
       const response = await cartApi.removeItem(productId);
-      setCart(response.cart_items, response.total);
+      setCart(response.cart_items || [], response.total || 0);
     } catch (error) {
       console.error("Failed to remove item:", error);
+      await fetchCart();
     } finally {
       setUpdating(false);
     }
@@ -71,7 +74,7 @@ const Cart = () => {
     );
   }
 
-  if (items.length === 0) {
+  if (!items || items.length === 0) {
     return (
       <div className={styles.emptyState}>
         <ShoppingBag className={styles.emptyIcon} />

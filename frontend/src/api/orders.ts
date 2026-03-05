@@ -6,7 +6,7 @@ export interface CreateOrderData {
     product_id: number;
     quantity: number;
   }>;
-  delivery_method?: "delivery" | "pickup";
+  delivery_method?: "delivery" | "pickup" | "nova_poshta";
   delivery_address?: string;
   notes?: string;
 }
@@ -20,7 +20,7 @@ export interface TrackingData {
     tracking_number: string | null;
     estimated_delivery_date: string | null;
     progress_percentage: number;
-    total_amount: number;
+    total_amount: string | number;
     created_at: string;
     updated_at: string;
   };

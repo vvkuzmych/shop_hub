@@ -25,7 +25,8 @@ class Order < ApplicationRecord
 
   enum :delivery_method, {
     delivery: 0,          # Home delivery
-    pickup: 1             # Store pickup
+    pickup: 1,            # Store pickup
+    nova_poshta: 2        # Nova Poshta (Ukrainian delivery service)
   }
 
   enum :payment_status, {
@@ -41,7 +42,7 @@ class Order < ApplicationRecord
   validates :status, presence: true
   validates :delivery_method, presence: true
   validates :payment_status, presence: true
-  validates :delivery_address, presence: true, if: -> { delivery? }
+  validates :delivery_address, presence: true, if: -> { delivery? || nova_poshta? }
 
   # Callbacks
   before_validation :calculate_total, on: :create

@@ -205,7 +205,10 @@ const OrderTracking = () => {
               <div className={styles.infoItem}>
                 <div className={styles.infoLabel}>Total Amount</div>
                 <div className={styles.infoAmount}>
-                  ${tracking.total_amount.toFixed(2)}
+                  ${typeof tracking.total_amount === 'string' 
+                    ? parseFloat(tracking.total_amount).toFixed(2)
+                    : tracking.total_amount.toFixed(2)
+                  }
                 </div>
               </div>
               
