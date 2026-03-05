@@ -47,6 +47,8 @@ RSpec.configure do |config|
 
   # Database Cleaner
   config.before(:suite) do
+    # Allow DATABASE_URL for Docker testing
+    DatabaseCleaner.allow_remote_database_url = true if ENV["DATABASE_URL"]&.include?("@db:")
     DatabaseCleaner.clean_with(:truncation)
   end
 

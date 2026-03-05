@@ -4,6 +4,17 @@ Welcome to the ShopHub documentation! This directory contains guides and documen
 
 ## 📚 Available Documentation
 
+### [Docker Setup Guide](./DOCKER.md) 🐳
+Complete guide to running ShopHub with Docker for development.
+
+**Topics covered:**
+- Quick start with docker-compose
+- Environment configuration
+- Common Docker commands
+- Development workflow
+- Debugging in containers
+- Production deployment
+
 ### [Database Seeding Guide](./SEEDING_DATA.md)
 Learn how to populate your development database with sample data for testing.
 
@@ -22,7 +33,7 @@ Complete guide to the Nova Poshta delivery service integration.
 - Customer checkout experience
 - Backend implementation details
 - Frontend components
-- Future API integration plans
+- API integration details
 - Testing and seed data
 
 ### [Eager Loading Strategies](./EAGER_LOADING_STRATEGIES.md)
@@ -64,7 +75,25 @@ shop_hub/
 
 ## 🚀 Quick Start
 
-### Backend (Rails API)
+### Option 1: Docker (Recommended) 🐳
+
+```bash
+# Build and start all services
+docker-compose up -d
+
+# Setup database
+docker-compose exec backend rails db:create db:migrate db:seed
+
+# Access applications
+# Frontend: http://localhost:5175
+# Backend:  http://localhost:3000
+```
+
+See [Docker Setup Guide](./DOCKER.md) for detailed instructions.
+
+### Option 2: Local Development
+
+**Backend (Rails API)**
 
 ```bash
 # Install dependencies
@@ -78,7 +107,7 @@ rails server
 # Or use: make start
 ```
 
-### Frontend (React)
+**Frontend (React)**
 
 ```bash
 cd frontend
@@ -96,14 +125,15 @@ npm run dev
 # View all available commands
 make help
 
-# Start both backend and frontend
-make start
+# Local development
+make start          # Start both backend and frontend
+make stop           # Stop all services
+make logs           # View logs
 
-# View logs
-make logs
-
-# Stop both servers
-make stop
+# Docker commands
+make docker-up      # Start Docker containers
+make docker-down    # Stop Docker containers
+make docker-logs    # View Docker logs
 ```
 
 ---

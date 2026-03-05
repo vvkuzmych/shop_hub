@@ -176,4 +176,71 @@ stripe-webhook: ## Start Stripe webhook listener (requires Stripe CLI)
 	@echo "$(GREEN)Starting Stripe webhook listener...$(NC)"
 	@stripe listen --forward-to localhost:3000/api/v1/payments/webhook
 
+# Docker commands
+docker-build: ## Build Docker containers
+	@echo "$(GREEN)Building Docker containers...$(NC)"
+	docker-compose build
+
+docker-up: ## Start application in Docker
+	@echo "$(GREEN)Starting Docker containers...$(NC)"
+	docker-compose up -d
+	@echo ""
+	@echo "$(GREEN)✓ Docker containers started!$(NC)"
+	@echo "  Backend:  http://localhost:3000"
+	@echo "  Frontend: http://localhost:5175"
+	@echo ""
+	@echo "View logs with: make docker-logs"
+
+docker-down: ## Stop Docker containers
+	@echo "$(RED)Stopping Docker containers...$(NC)"
+	docker-compose down
+	@echo "$(RED)✓ Docker containers stopped$(NC)"
+
+docker-restart: docker-down docker-up ## Restart Docker containers
+
+docker-logs: ## View Docker logs
+	docker-compose logs -f
+
+docker-logs-backend: ## View Docker backend logs
+	docker-compose logs -f backend
+
+docker-logs-frontend: ## View Docker frontend logs
+	docker-compose logs -f frontend
+
+docker-ps: ## List Docker containers status
+	docker-compose ps
+
+docker-exec-backend: ## Execute bash in backend container
+	docker-compose exec backend bash
+
+docker-exec-frontend: ## Execute sh in frontend container
+	docker-compose exec frontend sh
+
+docker-db-setup: ## Setup database in Docker
+	@echo "$(GREEN)Setting up database in Docker...$(NC)"
+	docker-compose exec backend bundle exec rails db:create db:migrate db:seed
+	@echo "$(GREEN)Database setup complete!$(NC)"
+
+docker-db-migrate: ## Run migrations in Docker
+	docker-compose exec backend bundle exec rails db:migrate
+
+docker-db-reset: ## Reset database in Docker
+	@echo "$(RED)WARNING: This will destroy all data in Docker!$(NC)"
+	@read -p "Are you sure? (y/N): " confirm && [ "$$confirm" = "y" ] || exit 1
+	docker-compose exec backend bundle exec rails db:drop db:create db:migrate db:seed
+
+docker-test: ## Run tests in Docker
+	@echo "$(GREEN)Running tests in Docker...$(NC)"
+	docker-compose exec backend bash -c "RAILS_ENV=test DATABASE_URL=postgresql://postgres:postgres@db:5432/shop_hub_test bundle exec rspec"
+
+docker-console: ## Open Rails console in Docker
+	docker-compose exec backend bundle exec rails console
+
+docker-clean: ## Remove Docker containers, networks, and volumes
+	@echo "$(RED)WARNING: This will remove all Docker data including volumes!$(NC)"
+	@read -p "Are you sure? (y/N): " confirm && [ "$$confirm" = "y" ] || exit 1
+	docker-compose down -v
+	docker system prune -f
+	@echo "$(RED)Docker cleanup complete!$(NC)"
+
 .DEFAULT_GOAL := help

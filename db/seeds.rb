@@ -47,8 +47,12 @@ end
 
   # Create orders for each customer
   rand(1..3).times do
+    delivery_method = [ :delivery, :pickup, :nova_poshta ].sample
     order = customer.orders.build(
-      status: [ :pending, :confirmed, :shipped ].sample
+      status: [ :pending, :payment_received, :shipped ].sample,
+      delivery_method: delivery_method,
+      payment_status: [ :payment_unpaid, :payment_paid ].sample,
+      delivery_address: delivery_method == :pickup ? nil : "#{Faker::Address.street_address}, #{Faker::Address.city}, #{Faker::Address.state_abbr} #{Faker::Address.zip_code}"
     )
 
     # Add items to order

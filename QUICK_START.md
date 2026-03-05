@@ -1,10 +1,32 @@
 # ShopHub - Quick Start Guide
 
-## 🚀 Start Application (One Command)
+## 🚀 Start Application
+
+### Option 1: Docker (Recommended) 🐳
+
+```bash
+# Build and start
+docker-compose up -d
+
+# Setup database (first time only)
+docker-compose exec backend rails db:create db:migrate db:seed
+```
+
+### Option 2: Local Development
 
 ```bash
 cd /Users/vkuzm/RubymineProjects/shop_hub
 ./scripts/start.sh
+```
+
+### Option 3: Using Makefile
+
+```bash
+# Local
+make start
+
+# Docker
+make docker-up
 ```
 
 ## 🌐 Access URLs
@@ -31,7 +53,15 @@ Password: password
 ## 🛑 Stop Application
 
 ```bash
+# Local development
 ./scripts/stop.sh
+# or
+make stop
+
+# Docker
+docker-compose down
+# or
+make docker-down
 ```
 
 ## 📊 Project Stats
@@ -71,6 +101,7 @@ Password: password
 ## 📚 Full Documentation
 
 - `README.md` - Complete guide
+- `docs/DOCKER.md` - Docker setup guide 🐳
 - `FRONTEND_SETUP.md` - Frontend details
 - `FULLSTACK_SUMMARY.md` - Full overview
 - `frontend/README.md` - Frontend dev guide

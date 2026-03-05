@@ -80,11 +80,28 @@ A full-featured e-commerce REST API built with Ruby on Rails 8.1. ShopHub provid
 
 ## 📦 Prerequisites
 
+### Option 1: Docker (Recommended for Quick Start)
+
+- Docker Desktop 4.0+
+- Docker Compose 2.0+
+
+**Install Docker:**
+```bash
+# macOS
+brew install --cask docker
+
+# Windows: Download from docker.com
+# Linux: Follow official installation guide
+```
+
+### Option 2: Local Development
+
 - Ruby 3.3.6
 - Rails 8.1.2
 - PostgreSQL 14+
 - Bundler 2.x
 - Redis (for Sidekiq)
+- Node.js 20+ (for frontend)
 
 ### Install Ruby (via rbenv)
 ```bash
@@ -118,19 +135,63 @@ sudo systemctl start redis
 
 ## 🚀 Installation
 
-### 1. Clone the Repository
-```bash
-cd /Users/vkuzm/RubymineProjects
-# Repository already at: shop_hub/
-```
+### Option 1: Docker Setup (Recommended)
 
-### 2. Install Dependencies
+#### 1. Clone the Repository
 ```bash
+git clone <repository-url>
 cd shop_hub
-bundle install
 ```
 
-### 3. Database Setup
+#### 2. Setup Environment Variables
+```bash
+# Copy example files
+cp .env.example .env
+cp frontend/.env.example frontend/.env
+```
+
+Edit `.env` and `frontend/.env` with your configuration (see [Configuration](#configuration) section).
+
+#### 3. Build and Start Services
+```bash
+# Build containers
+docker-compose build
+
+# Start all services (PostgreSQL, Redis, Backend, Frontend, Sidekiq)
+docker-compose up -d
+
+# Setup database
+docker-compose exec backend rails db:create db:migrate db:seed
+```
+
+#### 4. Access Applications
+- **Frontend**: http://localhost:5175
+- **Backend API**: http://localhost:3000
+- **API Docs**: http://localhost:3000/api-docs
+
+**Default Credentials:**
+- Admin: `admin@test.com` / `password123`
+- Customer: `customer@test.com` / `password123`
+
+For detailed Docker instructions, see [Docker Documentation](docs/DOCKER.md).
+
+---
+
+### Option 2: Local Development Setup
+
+#### 1. Clone the Repository
+```bash
+git clone <repository-url>
+cd shop_hub
+```
+
+#### 2. Install Dependencies
+```bash
+bundle install
+cd frontend && npm install && cd ..
+```
+
+#### 3. Database Setup
 ```bash
 # Create database
 rails db:create
@@ -143,11 +204,11 @@ rails db:seed
 ```
 
 The seed command creates:
-- 1 admin user (`admin@shophub.com` / `password`)
-- 5 customer users
+- 1 admin user (`admin@test.com` / `password123`)
+- 1 customer user (`customer@test.com` / `password123`)
 - 6 categories (with hierarchy)
 - 10 products with images
-- 5 sample orders
+- Sample orders with tracking
 
 ---
 
@@ -190,21 +251,67 @@ development:
 
 ## 🏃 Running the Application
 
-### Quick Start (Both Backend + Frontend)
+### Option 1: Docker (Recommended)
 
 ```bash
-# One command to start everything
-./scripts/start.sh
+# Start all services
+docker-compose up -d
 
-# To stop everything
-./scripts/stop.sh
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
 ```
 
-This will start:
-- Rails API on `http://localhost:3000`
-- React Frontend on `http://localhost:5173`
+**Services:**
+- Frontend: http://localhost:5175
+- Backend: http://localhost:3000
+- PostgreSQL: localhost:5432
+- Redis: localhost:6379
 
-### Manual Start
+**Common Docker Commands:**
+```bash
+# Rails console
+docker-compose exec backend rails console
+
+# Run migrations
+docker-compose exec backend rails db:migrate
+
+# Run tests
+docker-compose exec backend rspec
+
+# View logs
+docker-compose logs -f backend
+docker-compose logs -f frontend
+```
+
+See [Docker Documentation](docs/DOCKER.md) for detailed usage.
+
+---
+
+### Option 2: Using Makefile
+
+```bash
+# Start all services (backend, frontend, sidekiq)
+make start
+
+# Stop all services
+make stop
+
+# View logs
+make logs
+
+# Run tests
+make test
+
+# See all available commands
+make help
+```
+
+---
+
+### Option 3: Manual Start
 
 #### Start the Rails Backend (Terminal 1)
 
@@ -228,9 +335,9 @@ cd frontend
 npm run dev
 ```
 
-Frontend will be available at: `http://localhost:5173`
+Frontend will be available at: `http://localhost:5175`
 
-### Start Background Jobs (Optional - Terminal 3)
+#### Start Background Jobs (Terminal 3)
 
 ```bash
 # In a separate terminal
@@ -244,7 +351,9 @@ bundle exec sidekiq
 curl http://localhost:3000/api/v1/products
 
 # Open frontend in browser
-open http://localhost:5173
+open http://localhost:5175  # macOS
+# or
+xdg-open http://localhost:5175  # Linux
 ```
 
 ---
