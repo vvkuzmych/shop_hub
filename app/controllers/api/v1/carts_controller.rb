@@ -44,7 +44,7 @@ module Api
       def remove_item
         cart_item = current_user.cart_items.find_by!(product_id: params[:product_id])
         cart_item.destroy
-        
+
         # Return updated cart
         cart_items = current_user.cart_items.includes(:product)
         render json: {

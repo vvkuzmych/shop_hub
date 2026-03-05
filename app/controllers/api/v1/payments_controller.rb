@@ -2,7 +2,6 @@ module Api
   module V1
     class PaymentsController < BaseController
       skip_before_action :authenticate_user!, only: [ :webhook ]
-      skip_before_action :verify_authenticity_token, only: [ :webhook ]
 
       # POST /api/v1/payments/create_intent
       def create_intent

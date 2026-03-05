@@ -1,32 +1,3 @@
-# == Schema Information
-#
-# Table name: orders
-#
-#  id                      :bigint           not null, primary key
-#  delivery_address        :text
-#  delivery_method         :integer          default("delivery"), not null
-#  estimated_delivery_date :datetime
-#  notes                   :text
-#  payment_status          :integer          default("unpaid"), not null
-#  status                  :integer
-#  total_amount            :decimal(, )
-#  tracking_number         :string
-#  created_at              :datetime         not null
-#  updated_at              :datetime         not null
-#  payment_intent_id       :string
-#  user_id                 :bigint           not null
-#
-# Indexes
-#
-#  index_orders_on_payment_intent_id  (payment_intent_id)
-#  index_orders_on_tracking_number    (tracking_number)
-#  index_orders_on_user_id            (user_id)
-#
-# Foreign Keys
-#
-#  fk_rails_...  (user_id => users.id)
-#
-
 require "rails_helper"
 
 RSpec.describe Order, type: :model do
@@ -39,7 +10,38 @@ RSpec.describe Order, type: :model do
 
   # Enum tests
   describe "enums" do
-    it { is_expected.to define_enum_for(:status).with_values(pending: 0, confirmed: 1, shipped: 2, delivered: 3, cancelled: 4) }
+    it do
+      is_expected.to define_enum_for(:status).with_values(
+        pending: 0,
+        payment_received: 1,
+        processing: 2,
+        packed: 3,
+        shipped: 4,
+        out_for_delivery: 5,
+        delivered: 6,
+        ready_for_pickup: 7,
+        picked_up: 8,
+        cancelled: 9
+      )
+    end
+
+    it do
+      is_expected.to define_enum_for(:delivery_method).with_values(
+        delivery: 0,
+        pickup: 1,
+        nova_poshta: 2
+      )
+    end
+
+    it do
+      is_expected.to define_enum_for(:payment_status).with_values(
+        payment_unpaid: 0,
+        payment_pending: 1,
+        payment_paid: 2,
+        payment_failed: 3,
+        payment_refunded: 4
+      )
+    end
   end
 
   # Validation tests
@@ -91,7 +93,13 @@ RSpec.describe Order, type: :model do
         product1 = create(:product, price: 10.00)
         product2 = create(:product, price: 20.00)
 
-        order = Order.new(user: user, status: :pending)
+        order = Order.new(
+          user: user,
+          status: :pending,
+          delivery_method: :delivery,
+          payment_status: :payment_unpaid,
+          delivery_address: "123 Test St, Test City"
+        )
         order.order_items.build(product: product1, quantity: 2, price: 10.00)
         order.order_items.build(product: product2, quantity: 1, price: 20.00)
 
@@ -108,8 +116,23 @@ RSpec.describe Order, type: :model do
       order = create(:order, status: :pending)
 
       expect(order.pending?).to be true
-      expect(order.confirmed?).to be false
+      expect(order.payment_received?).to be false
       expect(order.shipped?).to be false
+    end
+
+    it "provides delivery method query methods" do
+      order = create(:order, delivery_method: :delivery)
+
+      expect(order.delivery?).to be true
+      expect(order.pickup?).to be false
+      expect(order.nova_poshta?).to be false
+    end
+
+    it "provides payment status query methods" do
+      order = create(:order, payment_status: :payment_unpaid)
+
+      expect(order.payment_unpaid?).to be true
+      expect(order.payment_paid?).to be false
     end
   end
 end

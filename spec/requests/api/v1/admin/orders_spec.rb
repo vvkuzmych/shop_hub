@@ -50,11 +50,11 @@ RSpec.describe "Api::V1::Admin::Orders", type: :request do
     context "as admin" do
       it "updates order status" do
         patch "/api/v1/admin/orders/#{order.id}", params: {
-          order: { status: :confirmed }
+          order: { status: :processing }
         }, headers: admin_headers
 
         expect(response).to have_http_status(:ok)
-        expect(order.reload.status).to eq("confirmed")
+        expect(order.reload.status).to eq("processing")
       end
     end
 

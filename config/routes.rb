@@ -40,7 +40,7 @@ Rails.application.routes.draw do
           get :track
         end
       end
-      
+
       namespace :payments do
         post :create_intent
         post :webhook

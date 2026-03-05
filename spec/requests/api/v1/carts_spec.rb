@@ -64,12 +64,12 @@ RSpec.describe "Api::V1::Carts", type: :request do
   end
 
   describe "DELETE /api/v1/cart/remove_item" do
-    let!(:cart_item) { create(:cart_item, user: user) }
+    let!(:cart_item) { create(:cart_item, user: user, product: product) }
 
     it "removes item from cart" do
       expect {
         delete "/api/v1/cart/remove_item", params: {
-          cart_item_id: cart_item.id
+          product_id: product.id
         }, headers: headers
       }.to change(CartItem, :count).by(-1)
 
@@ -80,12 +80,12 @@ RSpec.describe "Api::V1::Carts", type: :request do
   end
 
   describe "PATCH /api/v1/cart/update_quantity" do
-    let!(:cart_item) { create(:cart_item, user: user, quantity: 2) }
+    let!(:cart_item) { create(:cart_item, user: user, product: product, quantity: 2) }
 
     context "with valid quantity" do
       it "updates cart item quantity" do
         patch "/api/v1/cart/update_quantity", params: {
-          cart_item_id: cart_item.id,
+          product_id: product.id,
           quantity: 5
         }, headers: headers
 
@@ -94,14 +94,18 @@ RSpec.describe "Api::V1::Carts", type: :request do
       end
     end
 
-    context "with invalid quantity" do
-      it "returns errors" do
-        patch "/api/v1/cart/update_quantity", params: {
-          cart_item_id: cart_item.id,
-          quantity: -1
-        }, headers: headers
+    context "with zero or negative quantity" do
+      it "removes the item from cart" do
+        expect {
+          patch "/api/v1/cart/update_quantity", params: {
+            product_id: product.id,
+            quantity: 0
+          }, headers: headers
+        }.to change(CartItem, :count).by(-1)
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:ok)
+        json = JSON.parse(response.body)
+        expect(json["message"]).to eq("Quantity updated")
       end
     end
   end

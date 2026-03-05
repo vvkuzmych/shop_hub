@@ -3,7 +3,7 @@
 module Api
   module V1
     class NovaPoshtaController < BaseController
-      skip_before_action :authenticate_user!, only: [:search_cities, :get_warehouses, :get_postomats]
+      skip_before_action :authenticate_user!, only: [ :search_cities, :get_warehouses, :get_postomats ]
 
       # GET /api/v1/nova_poshta/cities?query=Київ
       def search_cities

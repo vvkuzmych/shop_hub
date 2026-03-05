@@ -56,7 +56,9 @@ RSpec.describe "Api::V1::Orders", type: :request do
           items: [
             { product_id: product1.id, quantity: 2 },
             { product_id: product2.id, quantity: 1 }
-          ]
+          ],
+          delivery_method: "delivery",
+          delivery_address: "123 Test St, Test City, TS 12345"
         }
 
         expect {
@@ -73,7 +75,9 @@ RSpec.describe "Api::V1::Orders", type: :request do
         order_params = {
           items: [
             { product_id: product1.id, quantity: 2 }
-          ]
+          ],
+          delivery_method: "delivery",
+          delivery_address: "123 Test St, Test City, TS 12345"
         }
 
         expect {
@@ -117,14 +121,14 @@ RSpec.describe "Api::V1::Orders", type: :request do
       end
     end
 
-    context "with confirmed order" do
-      let(:order) { create(:order, user: user, status: :confirmed) }
+    context "with processing order" do
+      let(:order) { create(:order, user: user, status: :processing, payment_status: :payment_paid) }
 
       it "prevents cancellation" do
         patch "/api/v1/orders/#{order.id}/cancel", headers: headers
 
         expect(response).to have_http_status(:unprocessable_entity)
-        expect(order.reload.status).to eq("confirmed")
+        expect(order.reload.status).to eq("processing")
       end
     end
 
