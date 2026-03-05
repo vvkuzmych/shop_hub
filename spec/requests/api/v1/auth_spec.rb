@@ -58,7 +58,7 @@ RSpec.describe "Api::V1::Auth", type: :request do
 
       it "returns validation errors" do
         post "/api/v1/signup", params: invalid_attributes
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
 
         json = JSON.parse(response.body)
         expect(json["errors"]).to be_present
@@ -241,7 +241,7 @@ RSpec.describe "Api::V1::Auth", type: :request do
           }
         }
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
   end

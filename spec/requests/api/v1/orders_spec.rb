@@ -96,7 +96,7 @@ RSpec.describe "Api::V1::Orders", type: :request do
           ]
         }, headers: headers
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         json = JSON.parse(response.body)
         expect(json["errors"]).to be_present
       end
@@ -104,7 +104,7 @@ RSpec.describe "Api::V1::Orders", type: :request do
       it "returns error when no items provided" do
         post "/api/v1/orders", params: { items: [] }, headers: headers
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
   end
@@ -127,7 +127,7 @@ RSpec.describe "Api::V1::Orders", type: :request do
       it "prevents cancellation" do
         patch "/api/v1/orders/#{order.id}/cancel", headers: headers
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(order.reload.status).to eq("processing")
       end
     end
