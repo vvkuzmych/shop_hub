@@ -5,7 +5,9 @@ module Api
 
       # GET /api/v1/products
       def index
-        @products = Product.active.includes(:category, :reviews)
+        @products = Product.active
+                           .includes(:category, :reviews)
+                           .with_attached_images
         @products = @products.search(params[:q]) if params[:q].present?
         @products = @products.by_category(params[:category_id]) if params[:category_id].present?
         @products = @products.where("price >= ?", params[:min_price]) if params[:min_price].present?
@@ -22,7 +24,17 @@ module Api
 
       # GET /api/v1/products/:id
       def show
-        @product = Product.includes(:category, reviews: :user).find(params[:id])
+        # Option 1: includes (separate queries - RECOMMENDED for single record)
+        # Faster with proper indexes, cleaner queries
+        @product = Product.includes(:category, reviews: :user)
+                          .with_attached_images
+                          .find(params[:id])
+
+        # Option 2: eager_load (single JOIN query - too much time requires)
+        # Use if you need filtering on associations or really want 1 query
+        # @product = Product.eager_load(:category, reviews: :user)
+        #                   .with_attached_images
+        #                   .find(params[:id])
 
         render json: ProductSerializer.new(@product, {
           include: [ :category, :reviews ]
