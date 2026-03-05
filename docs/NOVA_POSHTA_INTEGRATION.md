@@ -46,6 +46,11 @@ The service integrates with Nova Poshta API v2.0 at `https://api.novaposhta.ua/v
 - `get_postomats(city_ref)` - Get parcel lockers for a city
 - `get_warehouse_types()` - Get available warehouse types
 
+**Security**:
+- ✅ SSL certificate verification enabled (proper HTTPS validation)
+- All API requests use secure HTTPS connection to Nova Poshta servers
+- API key stored in environment variables (never committed to git)
+
 **API Endpoints**: `app/controllers/api/v1/nova_poshta_controller.rb`
 
 - `GET /api/v1/nova_poshta/cities?query=Київ` - Search cities

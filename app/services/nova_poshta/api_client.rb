@@ -101,7 +101,6 @@ module NovaPoshta
       http = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl = true
       http.read_timeout = 10
-      http.verify_mode = OpenSSL::SSL::VERIFY_NONE  # Skip SSL verification for development
 
       request = Net::HTTP::Post.new(uri.path, { "Content-Type" => "application/json" })
       request.body = request_body.to_json
