@@ -243,4 +243,56 @@ docker-clean: ## Remove Docker containers, networks, and volumes
 	docker system prune -f
 	@echo "$(RED)Docker cleanup complete!$(NC)"
 
+# Production commands (with Nginx)
+prod-build: ## Build production Docker images
+	@echo "$(GREEN)Building production images...$(NC)"
+	cd frontend && npm run build
+	docker-compose -f docker-compose.prod.yml build
+
+prod-up: ## Start production stack
+	@echo "$(GREEN)Starting production stack...$(NC)"
+	docker-compose -f docker-compose.prod.yml up -d
+	@echo "$(GREEN)Production stack is running!$(NC)"
+	@echo "$(YELLOW)Access at: http://localhost$(NC)"
+
+prod-down: ## Stop production stack
+	docker-compose -f docker-compose.prod.yml down
+
+prod-restart: prod-down prod-up ## Restart production stack
+
+prod-logs: ## View production logs
+	docker-compose -f docker-compose.prod.yml logs -f
+
+prod-logs-nginx: ## View Nginx logs
+	docker-compose -f docker-compose.prod.yml exec nginx tail -f /var/log/nginx/access.log
+
+prod-logs-backend: ## View production backend logs
+	docker-compose -f docker-compose.prod.yml logs -f backend
+
+prod-ps: ## List production containers status
+	docker-compose -f docker-compose.prod.yml ps
+
+prod-setup: ## Setup production database (first time only)
+	@echo "$(GREEN)Setting up production database...$(NC)"
+	docker-compose -f docker-compose.prod.yml exec backend bundle exec rails db:create db:migrate db:seed
+	@echo "$(GREEN)Production database ready!$(NC)"
+
+prod-migrate: ## Run production migrations
+	docker-compose -f docker-compose.prod.yml exec backend bundle exec rails db:migrate
+
+prod-console: ## Open production Rails console
+	docker-compose -f docker-compose.prod.yml exec backend bundle exec rails console -e production
+
+prod-test-nginx: ## Test Nginx configuration
+	docker-compose -f docker-compose.prod.yml exec nginx nginx -t
+
+prod-reload-nginx: ## Reload Nginx (no downtime)
+	docker-compose -f docker-compose.prod.yml exec nginx nginx -s reload
+
+prod-clean: ## Remove production containers and volumes
+	@echo "$(RED)WARNING: This will remove all production data!$(NC)"
+	@read -p "Are you sure? (y/N): " confirm && [ "$$confirm" = "y" ] || exit 1
+	docker-compose -f docker-compose.prod.yml down -v
+	@echo "$(RED)Production cleanup complete!$(NC)"
+
 .DEFAULT_GOAL := help

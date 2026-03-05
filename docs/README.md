@@ -15,6 +15,18 @@ Complete guide to running ShopHub with Docker for development.
 - Debugging in containers
 - Production deployment
 
+### [Nginx & Production Deployment](./NGINX_PRODUCTION.md) 🚀
+Complete guide to production deployment with Nginx reverse proxy.
+
+**Topics covered:**
+- Why use Nginx in production
+- Architecture comparison (dev vs prod)
+- SSL/HTTPS setup
+- Load balancing
+- Performance tuning
+- Security best practices
+- Troubleshooting
+
 ### [Database Seeding Guide](./SEEDING_DATA.md)
 Learn how to populate your development database with sample data for testing.
 
