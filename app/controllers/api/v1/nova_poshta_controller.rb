@@ -19,20 +19,9 @@ module Api
         client = NovaPoshta::ApiClient.new
         cities = client.search_cities(query)
 
-        # Format response for frontend
-        formatted_cities = cities.map do |city|
-          {
-            ref: city["Ref"],
-            name: city["Description"],
-            name_ru: city["DescriptionRu"],
-            area: city["Area"],
-            settlement_type: city["SettlementTypeDescription"]
-          }
-        end
-
         render json: {
           success: true,
-          data: formatted_cities
+          data: NovaPoshtaCitySerializer.format_collection(cities)
         }
       rescue NovaPoshta::ApiClient::ApiError => e
         render json: {
@@ -56,28 +45,9 @@ module Api
         client = NovaPoshta::ApiClient.new
         warehouses = client.get_warehouses(city_ref, warehouse_type: warehouse_type)
 
-        # Format response for frontend
-        formatted_warehouses = warehouses.map do |warehouse|
-          {
-            ref: warehouse["Ref"],
-            number: warehouse["Number"],
-            description: warehouse["Description"],
-            description_ru: warehouse["DescriptionRu"],
-            short_address: warehouse["ShortAddress"],
-            short_address_ru: warehouse["ShortAddressRu"],
-            type_of_warehouse: warehouse["TypeOfWarehouse"],
-            category_of_warehouse: warehouse["CategoryOfWarehouse"],
-            latitude: warehouse["Latitude"],
-            longitude: warehouse["Longitude"],
-            reception: warehouse["Reception"],
-            delivery: warehouse["Delivery"],
-            schedule: warehouse["Schedule"]
-          }
-        end
-
         render json: {
           success: true,
-          data: formatted_warehouses
+          data: NovaPoshtaWarehouseSerializer.format_collection(warehouses)
         }
       rescue NovaPoshta::ApiClient::ApiError => e
         render json: {
@@ -100,26 +70,9 @@ module Api
         client = NovaPoshta::ApiClient.new
         postomats = client.get_postomats(city_ref)
 
-        # Format response for frontend
-        formatted_postomats = postomats.map do |postomat|
-          {
-            ref: postomat["Ref"],
-            number: postomat["Number"],
-            description: postomat["Description"],
-            description_ru: postomat["DescriptionRu"],
-            short_address: postomat["ShortAddress"],
-            short_address_ru: postomat["ShortAddressRu"],
-            latitude: postomat["Latitude"],
-            longitude: postomat["Longitude"],
-            reception: postomat["Reception"],
-            delivery: postomat["Delivery"],
-            schedule: postomat["Schedule"]
-          }
-        end
-
         render json: {
           success: true,
-          data: formatted_postomats
+          data: NovaPoshtaPostomatSerializer.format_collection(postomats)
         }
       rescue NovaPoshta::ApiClient::ApiError => e
         render json: {
