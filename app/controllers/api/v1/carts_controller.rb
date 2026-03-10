@@ -3,20 +3,7 @@ module Api
     class CartsController < BaseController
       def items
         cart_items = current_user.cart_items.includes(:product)
-        render json: {
-          cart_items: cart_items.map { |item|
-            {
-              id: item.id,
-              product_id: item.product_id,
-              product_name: item.product.name,
-              quantity: item.quantity,
-              price: item.price.to_f,
-              subtotal: item.subtotal.to_f,
-              stock: item.product.stock
-            }
-          },
-          total: cart_items.sum(&:subtotal).to_f
-        }, status: :ok
+        render json: CartItemSerializer.format_cart(cart_items), status: :ok
       end
 
       def add_item
@@ -30,23 +17,9 @@ module Api
         end
 
         if cart_item.save
-          # Return updated cart
           cart_items = current_user.cart_items.includes(:product)
-          render json: {
-            message: "Product added to cart",
-            cart_items: cart_items.map { |item|
-              {
-                id: item.id,
-                product_id: item.product_id,
-                product_name: item.product.name,
-                quantity: item.quantity,
-                price: item.price.to_f,
-                subtotal: item.subtotal.to_f,
-                stock: item.product.stock
-              }
-            },
-            total: cart_items.sum(&:subtotal).to_f
-          }, status: :created
+          render json: CartItemSerializer.format_cart(cart_items, message: "Product added to cart"),
+                 status: :created
         else
           render json: {
             errors: cart_item.errors.full_messages
@@ -58,23 +31,9 @@ module Api
         cart_item = current_user.cart_items.find_by!(product_id: params[:product_id])
         cart_item.destroy
 
-        # Return updated cart
         cart_items = current_user.cart_items.includes(:product)
-        render json: {
-          message: "Item removed from cart",
-          cart_items: cart_items.map { |item|
-            {
-              id: item.id,
-              product_id: item.product_id,
-              product_name: item.product.name,
-              quantity: item.quantity,
-              price: item.price.to_f,
-              subtotal: item.subtotal.to_f,
-              stock: item.product.stock
-            }
-          },
-          total: cart_items.sum(&:subtotal).to_f
-        }, status: :ok
+        render json: CartItemSerializer.format_cart(cart_items, message: "Item removed from cart"),
+               status: :ok
       rescue ActiveRecord::RecordNotFound
         render json: { error: "Item not found in cart" }, status: :not_found
       end
@@ -90,23 +49,9 @@ module Api
           }, status: :unprocessable_entity
         end
 
-        # Return updated cart
         cart_items = current_user.cart_items.includes(:product)
-        render json: {
-          message: "Quantity updated",
-          cart_items: cart_items.map { |item|
-            {
-              id: item.id,
-              product_id: item.product_id,
-              product_name: item.product.name,
-              quantity: item.quantity,
-              price: item.price.to_f,
-              subtotal: item.subtotal.to_f,
-              stock: item.product.stock
-            }
-          },
-          total: cart_items.sum(&:subtotal).to_f
-        }, status: :ok
+        render json: CartItemSerializer.format_cart(cart_items, message: "Quantity updated"),
+               status: :ok
       rescue ActiveRecord::RecordNotFound
         render json: { error: "Item not found in cart" }, status: :not_found
       end
