@@ -6,18 +6,7 @@ module Api
 
       def index
         reviews = @product.reviews.includes(:user)
-        render json: reviews.map { |review|
-          {
-            id: review.id,
-            rating: review.rating,
-            comment: review.comment,
-            user: {
-              id: review.user.id,
-              full_name: review.user.full_name
-            },
-            created_at: review.created_at
-          }
-        }, status: :ok
+        render json: ReviewSerializer.format_collection(reviews), status: :ok
       end
 
       def create

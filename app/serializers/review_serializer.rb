@@ -31,4 +31,22 @@ class ReviewSerializer
   attribute :user_name do |review|
     review.user.email.split("@").first if review.user
   end
+
+  # Simple format methods for plain JSON responses
+  def self.format(review)
+    {
+      id: review.id,
+      rating: review.rating,
+      comment: review.comment,
+      user: {
+        id: review.user.id,
+        full_name: review.user.full_name
+      },
+      created_at: review.created_at
+    }
+  end
+
+  def self.format_collection(reviews)
+    reviews.map { |review| format(review) }
+  end
 end
