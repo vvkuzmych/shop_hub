@@ -51,7 +51,7 @@ RSpec.describe "Api::V1::Admin::Orders", type: :request do
       it "updates order status" do
         patch "/api/v1/admin/orders/#{order.id}", params: {
           order: { status: :processing }
-        }, headers: admin_headers
+        }, headers: admin_headers, as: :json
 
         expect(response).to have_http_status(:ok)
         expect(order.reload.status).to eq("processing")

@@ -3,6 +3,9 @@ require "active_support/core_ext/integer/time"
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
+  # Allow test requests from www.example.com (for RSpec running in development container)
+  config.host_authorization = { exclude: ->(_request) { true } }
+
   # Make code changes take effect immediately without server restart.
   config.enable_reloading = true
 

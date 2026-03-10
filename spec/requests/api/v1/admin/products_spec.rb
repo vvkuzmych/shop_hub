@@ -43,7 +43,7 @@ RSpec.describe "Api::V1::Admin::Products", type: :request do
         }
 
         expect {
-          post "/api/v1/admin/products", params: product_params, headers: admin_headers
+          post "/api/v1/admin/products", params: product_params, headers: admin_headers, as: :json
         }.to change(Product, :count).by(1)
 
         expect(response).to have_http_status(:created)
@@ -66,7 +66,7 @@ RSpec.describe "Api::V1::Admin::Products", type: :request do
       it "updates the product" do
         patch "/api/v1/admin/products/#{product.id}", params: {
           product: { name: "Updated Name" }
-        }, headers: admin_headers
+        }, headers: admin_headers, as: :json
 
         expect(response).to have_http_status(:ok)
         expect(product.reload.name).to eq("Updated Name")

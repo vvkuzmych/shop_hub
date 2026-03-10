@@ -26,7 +26,7 @@ RSpec.describe "Api::V1::Carts", type: :request do
           post "/api/v1/cart/add_item", params: {
             product_id: product.id,
             quantity: 2
-          }, headers: headers
+          }, headers: headers, as: :json
         }.to change(CartItem, :count).by(1)
 
         expect(response).to have_http_status(:created)
@@ -45,7 +45,7 @@ RSpec.describe "Api::V1::Carts", type: :request do
           post "/api/v1/cart/add_item", params: {
             product_id: product.id,
             quantity: 2
-          }, headers: headers
+          }, headers: headers, as: :json
         }.not_to change(CartItem, :count)
 
         expect(response).to have_http_status(:created)
@@ -63,7 +63,7 @@ RSpec.describe "Api::V1::Carts", type: :request do
         post "/api/v1/cart/add_item", params: {
           product_id: product.id,
           quantity: 0
-        }, headers: headers
+        }, headers: headers, as: :json
 
         expect(response).to have_http_status(:unprocessable_content)
       end
@@ -77,7 +77,7 @@ RSpec.describe "Api::V1::Carts", type: :request do
       expect {
         delete "/api/v1/cart/remove_item", params: {
           product_id: product.id
-        }, headers: headers
+        }, headers: headers, as: :json
       }.to change(CartItem, :count).by(-1)
 
       expect(response).to have_http_status(:ok)
@@ -94,7 +94,7 @@ RSpec.describe "Api::V1::Carts", type: :request do
         patch "/api/v1/cart/update_quantity", params: {
           product_id: product.id,
           quantity: 5
-        }, headers: headers
+        }, headers: headers, as: :json
 
         expect(response).to have_http_status(:ok)
         expect(cart_item.reload.quantity).to eq(5)
@@ -107,7 +107,7 @@ RSpec.describe "Api::V1::Carts", type: :request do
           patch "/api/v1/cart/update_quantity", params: {
             product_id: product.id,
             quantity: 0
-          }, headers: headers
+          }, headers: headers, as: :json
         }.to change(CartItem, :count).by(-1)
 
         expect(response).to have_http_status(:ok)

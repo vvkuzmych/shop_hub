@@ -62,7 +62,7 @@ RSpec.describe "Api::V1::Orders", type: :request do
         }
 
         expect {
-          post "/api/v1/orders", params: order_params, headers: headers
+          post "/api/v1/orders", params: order_params, headers: headers, as: :json
         }.to change(Order, :count).by(1)
          .and change(OrderItem, :count).by(2)
 
@@ -81,7 +81,7 @@ RSpec.describe "Api::V1::Orders", type: :request do
         }
 
         expect {
-          post "/api/v1/orders", params: order_params, headers: headers
+          post "/api/v1/orders", params: order_params, headers: headers, as: :json
         }.to change { product1.reload.stock }.from(10).to(8)
       end
     end
@@ -94,7 +94,7 @@ RSpec.describe "Api::V1::Orders", type: :request do
           items: [
             { product_id: product.id, quantity: 5 }
           ]
-        }, headers: headers
+        }, headers: headers, as: :json
 
         expect(response).to have_http_status(:unprocessable_content)
         json = JSON.parse(response.body)
@@ -102,7 +102,7 @@ RSpec.describe "Api::V1::Orders", type: :request do
       end
 
       it "returns error when no items provided" do
-        post "/api/v1/orders", params: { items: [] }, headers: headers
+        post "/api/v1/orders", params: { items: [] }, headers: headers, as: :json
 
         expect(response).to have_http_status(:unprocessable_content)
       end

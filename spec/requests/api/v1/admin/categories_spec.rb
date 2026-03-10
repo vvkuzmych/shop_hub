@@ -37,7 +37,7 @@ RSpec.describe "Api::V1::Admin::Categories", type: :request do
               name: "New Category",
               description: "Description"
             }
-          }, headers: admin_headers
+          }, headers: admin_headers, as: :json
         }.to change(Category, :count).by(1)
 
         expect(response).to have_http_status(:created)
@@ -52,7 +52,7 @@ RSpec.describe "Api::V1::Admin::Categories", type: :request do
       it "updates the category" do
         patch "/api/v1/admin/categories/#{category.id}", params: {
           category: { name: "Updated Name" }
-        }, headers: admin_headers
+        }, headers: admin_headers, as: :json
 
         expect(response).to have_http_status(:ok)
         expect(category.reload.name).to eq("Updated Name")

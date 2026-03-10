@@ -12,10 +12,12 @@ RSpec.describe "Api::V1::Categories", type: :request do
 
       expect(response).to have_http_status(:ok)
       json = JSON.parse(response.body)
-      expect(json.size).to eq(1)
-      expect(json.first["name"]).to eq("Electronics")
-      expect(json.first["subcategories"].size).to eq(1)
-      expect(json.first["subcategories"].first["name"]).to eq("Phones")
+      expect(json["data"].size).to eq(1)
+
+      category = json["data"].first
+      expect(category["attributes"]["name"]).to eq("Electronics")
+      expect(category["attributes"]["subcategories"].size).to eq(1)
+      expect(category["attributes"]["subcategories"].first["name"]).to eq("Phones")
     end
   end
 
@@ -25,8 +27,8 @@ RSpec.describe "Api::V1::Categories", type: :request do
 
       expect(response).to have_http_status(:ok)
       json = JSON.parse(response.body)
-      expect(json["name"]).to eq("Electronics")
-      expect(json["subcategories"].size).to eq(1)
+      expect(json["data"]["attributes"]["name"]).to eq("Electronics")
+      expect(json["data"]["attributes"]["subcategories"].size).to eq(1)
     end
   end
 

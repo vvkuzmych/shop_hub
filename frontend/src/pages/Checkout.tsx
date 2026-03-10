@@ -7,6 +7,7 @@ import type { NovaPoshtaCity, NovaPoshtaWarehouse, NovaPoshtaPostomat } from "..
 import { Package, MapPin, Store, CreditCard, Truck } from "lucide-react";
 import styles from "./Checkout.module.css";
 import { useCartStore } from "../store/cartStore";
+import DeliveryMapSimple from "../components/DeliveryMapSimple";
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -442,6 +443,51 @@ const Checkout = () => {
                   <p className={styles.fieldHint}>Номер телефону для SMS-повідомлень про доставку</p>
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* Store Pickup Map */}
+          {deliveryMethod === "pickup" && (
+            <div className={styles.section}>
+              <h2 className={styles.sectionTitle}>Select Store Location</h2>
+              <p className={styles.fieldHint} style={{ marginBottom: "16px" }}>
+                Choose a store on the map to pick up your order
+              </p>
+              <DeliveryMapSimple type="store" />
+            </div>
+          )}
+
+          {/* Nova Poshta Map */}
+          {deliveryMethod === "nova_poshta" && novaPoshtaData.selectedCity && warehouseSuggestions.length > 0 && (
+            <div className={styles.section}>
+              <h2 className={styles.sectionTitle}>
+                {novaPoshtaData.deliveryType === "postomat" ? "Карта поштоматів" : "Карта відділень"}
+              </h2>
+              <p className={styles.fieldHint} style={{ marginBottom: "16px" }}>
+                Натисніть на маркер на карті щоб обрати {novaPoshtaData.deliveryType === "postomat" ? "поштомат" : "відділення"}
+              </p>
+              <DeliveryMapSimple
+                type="nova_poshta"
+                warehouses={warehouseSuggestions}
+                deliveryType={novaPoshtaData.deliveryType}
+                onSelectWarehouse={(warehouse) => {
+                  setNovaPoshtaData(prev => ({ ...prev, selectedWarehouse: warehouse }));
+                }}
+                selectedWarehouse={novaPoshtaData.selectedWarehouse}
+              />
+              {novaPoshtaData.selectedWarehouse && (
+                <div style={{ 
+                  marginTop: "16px", 
+                  padding: "12px", 
+                  background: "#f0fdf4", 
+                  border: "1px solid #86efac",
+                  borderRadius: "8px"
+                }}>
+                  <p style={{ margin: 0, color: "#16a34a", fontWeight: "500" }}>
+                    ✓ Вибрано: {novaPoshtaData.selectedWarehouse.description}
+                  </p>
+                </div>
+              )}
             </div>
           )}
 

@@ -17,5 +17,15 @@
 class CategorySerializer
   include JSONAPI::Serializer
 
-  attributes :name, :description, :position
+  attributes :name, :description, :position, :parent_id
+
+  attribute :subcategories do |category|
+    category.children.map do |child|
+      {
+        id: child.id,
+        name: child.name,
+        description: child.description
+      }
+    end
+  end
 end

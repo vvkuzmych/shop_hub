@@ -29,7 +29,7 @@ RSpec.describe "Api::V1::Reviews", type: :request do
                 rating: 5,
                 comment: "Great product!"
               }
-            }, headers: headers
+            }, headers: headers, as: :json
           }.to change(Review, :count).by(1)
 
           expect(response).to have_http_status(:created)
@@ -45,7 +45,7 @@ RSpec.describe "Api::V1::Reviews", type: :request do
               rating: 10,
               comment: "Invalid rating"
             }
-          }, headers: headers
+          }, headers: headers, as: :json
 
           expect(response).to have_http_status(:unprocessable_content)
           json = JSON.parse(response.body)
@@ -60,7 +60,7 @@ RSpec.describe "Api::V1::Reviews", type: :request do
               rating: 5,
               comment: "Another review"
             }
-          }, headers: headers
+          }, headers: headers, as: :json
 
           expect(response).to have_http_status(:unprocessable_content)
         end

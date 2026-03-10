@@ -5,38 +5,12 @@ module Api
 
       def index
         categories = Category.root_categories.ordered.includes(:children)
-        render json: categories.map { |category|
-          {
-            id: category.id,
-            name: category.name,
-            description: category.description,
-            parent_id: category.parent_id,
-            subcategories: category.children.map { |child|
-              {
-                id: child.id,
-                name: child.name,
-                description: child.description
-              }
-            }
-          }
-        }, status: :ok
+        render json: CategorySerializer.new(categories).serializable_hash, status: :ok
       end
 
       def show
         category = Category.find(params[:id])
-        render json: {
-          id: category.id,
-          name: category.name,
-          description: category.description,
-          parent_id: category.parent_id,
-          subcategories: category.children.map { |child|
-            {
-              id: child.id,
-              name: child.name,
-              description: child.description
-            }
-          }
-        }, status: :ok
+        render json: CategorySerializer.new(category).serializable_hash, status: :ok
       end
 
       def products
