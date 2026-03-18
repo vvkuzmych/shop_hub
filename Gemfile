@@ -63,7 +63,7 @@ group :development, :test do
   gem "factory_bot_rails"
   gem "faker"
   gem "pry-rails"
-  gem "rspec-rails", "~> 8.0", ">= 8.0.1"
+  gem "rspec-rails", "~> 8.0"
   gem "rubocop-rails", require: false
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
